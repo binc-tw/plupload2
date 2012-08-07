@@ -10,28 +10,8 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
 
-<?php
+<script type="text/javascript" src="../js/moxie.full.js"></script>
 
-$libs = array(
-	'core/mOxie.js',
-	'core/Utils.js',
-	'core/Exceptions.js',
-	'core/I18N.js',
-	'core/EventTarget.js',
-	'core/Runtime.js',
-	'core/Transporter.js',
-	'core/FileAPI.js',
-	'core/Image.js',
-	'core/XMLHttpRequest.js',
-	'html5.js',
-	'flash.js'
-);
-
-foreach ($libs as $lib) {
-	echo '<script type="text/javascript" src="../src/moxie/src/javascript/'.$lib.'"></script>' . "\n";	
-}
-
-?>
 
 <script type="text/javascript" src="../src/plupload.js"></script>
 <script type="text/javascript" src="../src/jquery.ui.plupload/jquery.ui.plupload.js"></script>
