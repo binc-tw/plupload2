@@ -32,7 +32,7 @@ task("moxie", [], function (params) {
 
 			fs.renameSync(oPath + "/js/Moxie.swf", "js/Moxie.swf");
 			fs.renameSync(oPath + "/js/moxie.min.js", "js/moxie.min.js");
-			fs.renameSync(oPath + "/js/moxie.min.js", "js/moxie.full.js");
+			fs.renameSync(oPath + "/js/moxie.full.js", "js/moxie.full.js");
 		} else {
 			exit("mOxie: Build process failed.", 1);
 		}
