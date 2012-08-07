@@ -35,6 +35,7 @@ function renderUI(obj) {
 				'<div class="plupload">' +
 					'<div class="ui-state-default ui-widget-header plupload_header">' +
 						'<div class="plupload_header_content">' +
+							'<div class="plupload_logo"> </div>' +
 							'<div class="plupload_header_title">' + _('Select files') + '</div>' +
 							'<div class="plupload_header_text">' + _('Add files to the upload queue and click the start button.') + '</div>' +
 						'</div>' +
