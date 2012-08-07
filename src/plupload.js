@@ -891,26 +891,26 @@ plupload.Uploader = function(settings) {
 					required_caps: {
 						send_multipart: true
 					},
-					
-					swf_url: settings.flash_swf_url,
-					
-					onready: function() {
-						var info = o.Runtime.getInfo(this.ruid);
-
-						self.features = {
-							chunks: info.can('stream_upload'),
-							multipart: info.can('send_multipart'),
-							multi_selection: info.can('select_multiple')
-						};
-						
-						self.trigger('Init', { runtime: info.name });
-						self.trigger('PostInit');
-					},
-					
-					onchange: function() {
-						addSelectedFiles.call(self, this.files);
-					}
+					swf_url: settings.flash_swf_url
 				});
+
+				fileInput.onready = function() {
+					var info = o.Runtime.getInfo(this.ruid);
+
+					self.features = {
+						chunks: info.can('stream_upload'),
+						multipart: info.can('send_multipart'),
+						multi_selection: info.can('select_multiple')
+					};
+					
+					self.trigger('Init', { runtime: info.name });
+					self.trigger('PostInit');
+				};
+
+				fileInput.onchange = function() {
+					addSelectedFiles.call(self, this.files);
+				};
+				
 				
 				fileInput.bind('mouseenter mouseleave mousedown mouseup', function(e) {
 					var bButton = o(settings.browse_button);
@@ -933,6 +933,8 @@ plupload.Uploader = function(settings) {
 						bButton = null;
 					}
 				});
+
+				fileInput.init();
 			} catch (ex) {
 				self.trigger('Error', {
 					code : plupload.INIT_ERROR,
