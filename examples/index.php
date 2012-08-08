@@ -37,7 +37,11 @@
 		runtimes: "html5",
 		url: 'upload.php',
 		chunk_size: '5mb',
+		multi_selection: true,
 		flash_swf_url: '../src/moxie/js/Moxie.swf',
+
+		sortable: true,
+
 		required_features: {
 				
 		}

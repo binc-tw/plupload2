@@ -757,19 +757,16 @@ $.widget("ui.plupload", {
 	
 	
 	_enableSortingList: function() {
-		var idxStart, self = this;
+		var idxStart, self = this, filelist = $('.plupload_filelist_content', this.element);
 		
-		if ($('tbody tr', this.filelist).length < 2) {
+		if ($('.plupload_file', filelist).length < 2) {
 			return;	
 		}
 		
-		$('tbody', this.filelist).sortable({
-			containment: 'parent',
+		filelist.sortable({
 			items: '.plupload_delete',
 			
-			helper: function(e, el) {
-				return el.clone(true).find('td:not(.plupload_file_name)').remove().end().css('width', '100%');
-			},
+			helper: 'clone',
 			
 			stop: function(e, ui) {
 				var i, length, idx, files = [];

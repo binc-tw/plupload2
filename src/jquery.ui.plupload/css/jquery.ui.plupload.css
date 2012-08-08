@@ -94,7 +94,8 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	list-style: none;
 	display: block;
 	position: relative;
-	pverflow: hidden;
+	overflow: hidden;
+	float: left;
 }
 
 .plupload_file_thumb {
@@ -113,6 +114,7 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 .plupload_view_list .plupload_file {
 	border-left: none;
 	border-right: none;
+	width: 100%;
 }
 
 .plupload_view_list div.plupload_file_size, 
@@ -150,10 +152,6 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 }
 
 .plupload_view_thumbs .plupload_file {
-	display: inline-block;
-	_display: inline;
-	zoom: 1;
-	vertical-align: top;
 	width: 100px;
 	padding: 72px 6px 6px;
 	margin: 10px;
