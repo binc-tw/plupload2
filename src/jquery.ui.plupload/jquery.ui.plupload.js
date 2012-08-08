@@ -22,7 +22,7 @@
 
 (function(window, document, plupload, $, undef) {
 	
-var uploaders = {}, imgs = {};	
+var uploaders = {};	
 	
 function _(str) {
 	return plupload.translate(str) || str;
@@ -101,6 +101,8 @@ function renderUI(obj) {
 
 
 $.widget("ui.plupload", {
+
+	imgs: {},
 	
 	contents_bak: '',
 	
@@ -653,7 +655,7 @@ $.widget("ui.plupload", {
 			img.onload = function() {
 				img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { width: 100, height: 60, crop: true});
 				
-				imgs[file.id] = img; // save object in global private has, for cleanup purposes
+				self.imgs[file.id] = img; // save object in global private hash, for cleanup purposes
 			};
 
 			img.load(file.getSource());
@@ -671,7 +673,7 @@ $.widget("ui.plupload", {
 
 
 	_removeFiles: function(files) {
-		var up = this.uploader;
+		var self = this, up = this.uploader;
 
 		if (plupload.typeOf(files) !== 'array') {
 			files = [files];
@@ -683,9 +685,9 @@ $.widget("ui.plupload", {
 		}
 
 		$.each(files, function(i, file) {
-			if (imgs[file.id]) {
-				imgs[file.id].destroy();
-				delete imgs[file.id];
+			if (self.imgs[file.id]) {
+				self.imgs[file.id].destroy();
+				delete self.imgs[file.id];
 			}
 			$('#' + file.id).remove();
 			up.removeFile(file);
@@ -827,6 +829,14 @@ $.widget("ui.plupload", {
 		// destroy sortable behavior
 		if ($.ui.sortable && this.options.sortable) {
 			$('tbody', this.filelist).sortable('destroy');
+		}
+
+		// call destroy on every related image object
+		if (!plupload.isEmptyObj(this.imgs)) {
+			$.each(this.imgs, function(id, img) {
+				img.destroy();
+			});
+			this.imgs = {};
 		}
 		
 		// destroy uploader instance
