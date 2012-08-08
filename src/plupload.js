@@ -468,6 +468,11 @@ plupload.Uploader = function(settings) {
 		}
 	}
 
+	function calcFile(file) {
+		file.percent = file.size > 0 ? Math.ceil(file.loaded / file.size * 100) : 100;
+		calc();
+	}
+
 	function calc() {
 		var i, file;
 
@@ -830,8 +835,7 @@ plupload.Uploader = function(settings) {
 			});
 
 			self.bind('UploadProgress', function(up, file) {
-				file.percent = file.size > 0 ? Math.ceil(file.loaded / file.size * 100) : 100;
-				calc();
+				calcFile(file);
 			});
 
 			self.bind('StateChanged', function(up) {
@@ -871,7 +875,8 @@ plupload.Uploader = function(settings) {
 			self.bind("FileUploaded", function(up, file) {
 				file.status = plupload.DONE;
 				file.loaded = file.size;
-				up.trigger('UploadProgress', file);
+
+				calcFile(file);
 
 				// Upload next file but detach it from the error event
 				// since other custom listeners might want to stop the queue

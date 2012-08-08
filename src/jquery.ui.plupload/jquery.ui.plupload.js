@@ -503,20 +503,18 @@ $.widget("ui.plupload", {
 		function addFields() {
 			var 
 			  fields = ''
-			, count = self.counter.val() || 0
-			, id = this.id + '_' + (count++)
+			, count = parseInt(self.counter.val() || 0, 10)
+			, id = self.id + '_' + count
 			;
 
-			if (file.status === plupload.DONE) {
-				if (file.target_name) {
-					fields += '<input type="hidden" name="' + id + '_tmpname" value="'+plupload.xmlEncode(file.target_name)+'" />';
-				}
-				fields += '<input type="hidden" name="' + id + '_name" value="'+plupload.xmlEncode(file.name)+'" />';
-				fields += '<input type="hidden" name="' + id + '_status" value="' + (file.status === plupload.DONE ? 'done' : 'failed') + '" />';
-
-				$('#' + file.id).find('.plupload_file_fields').html(fields);
-				self.counter.val(++count);
+			if (file.target_name) {
+				fields += '<input type="hidden" name="' + id + '_tmpname" value="'+plupload.xmlEncode(file.target_name)+'" />';
 			}
+			fields += '<input type="hidden" name="' + id + '_name" value="'+plupload.xmlEncode(file.name)+'" />';
+			fields += '<input type="hidden" name="' + id + '_status" value="' + (file.status === plupload.DONE ? 'done' : 'failed') + '" />';
+
+			$('#' + file.id).find('.plupload_file_fields').html(fields);
+			self.counter.val(++count);
 		}
 
 		switch (file.status) {
