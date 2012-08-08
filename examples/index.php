@@ -16,24 +16,33 @@
 <script type="text/javascript" src="../src/plupload.js"></script>
 <script type="text/javascript" src="../src/jquery.ui.plupload/jquery.ui.plupload.js"></script>
 
+<script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+<script>
+	$(document).ready(function(){
+		$('#switcher').themeswitcher();
+	});
+</script>  
+
 </head>
 <body>
 
-<div id="container">
-	<div id="filepicker"> </div>
-</div>
+	<div id="switcher" style="margin-bottom: 20px"></div>
 
-<script>
-$('#filepicker').plupload({
-	runtimes: "html5",
-	url: 'upload.php',
-	chunk_size: '5mb',
-	flash_swf_url: '../src/moxie/js/Moxie.swf',
-	required_features: {
-			
-	}
-});
-</script>
+	<div id="container">
+		<div id="filepicker"> </div>
+	</div>
+
+	<script>
+	$('#filepicker').plupload({
+		runtimes: "html5",
+		url: 'upload.php',
+		chunk_size: '5mb',
+		flash_swf_url: '../src/moxie/js/Moxie.swf',
+		required_features: {
+				
+		}
+	});
+	</script>
 
 
 </body>
