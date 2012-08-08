@@ -139,6 +139,10 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	top: -999px;
 }
 
+.plupload_view_list .plupload_file_progress {
+	display: none;
+}
+
 
 /* thumbs view */
 .plupload_view_thumbs .plupload_filelist_header {
@@ -176,6 +180,23 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	font-size: 0.8em;
 	font-weight: normal;
 }
+
+.plupload_view_thumbs .plupload_file_status {
+	position: absolute;
+	top: 67px;
+	left: 6px;
+	width: 102px;
+	height: 3px;
+	overflow: hidden;
+	text-indent: -999px;
+}
+
+.plupload_view_thumbs .plupload_file_progress {
+	border: none;
+	height: 100%;
+}
+
+
 
 .plupload .ui-sortable-helper,
 .plupload .ui-sortable .plupload_file {

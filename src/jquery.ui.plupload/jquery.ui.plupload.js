@@ -311,14 +311,6 @@ $.widget("ui.plupload", {
 		});
 		
 		uploader.bind('UploadProgress', function(up, file) {
-			// Set file specific progress
-			$('#' + file.id)
-				.find('.plupload_file_status')
-					.html(file.percent + '%')
-					.end()
-				.find('.plupload_file_size')
-					.html(plupload.formatSize(file.size));	
-
 			self._handleFileStatus(file);
 			self._updateTotalProgress();
 			
@@ -548,14 +540,27 @@ $.widget("ui.plupload", {
 				iconClass = 'ui-icon ui-icon-circle-arrow-w';
 				
 				// scroll uploading file into the view if its bottom boundary is out of it
-				var scroller = $('.plupload_scroll', this.container),
-					scrollTop = scroller.scrollTop(),
-					scrollerHeight = scroller.height(),
-					rowOffset = $('#' + file.id).position().top + $('#' + file.id).height();
+				var 
+				  scroller = $('.plupload_scroll', this.container)
+				, scrollTop = scroller.scrollTop()
+				, scrollerHeight = scroller.height()
+				, rowOffset = $('#' + file.id).position().top + $('#' + file.id).height()
+				;
 					
 				if (scrollerHeight < rowOffset) {
 					scroller.scrollTop(scrollTop + rowOffset - scrollerHeight);
-				}				
+				}		
+
+				// Set file specific progress
+				$('#' + file.id)
+					.find('.plupload_file_percent')
+						.html(file.percent + '%')
+						.end()
+					.find('.plupload_file_progress')
+						.css('width', file.percent + '%')
+						.end()
+					.find('.plupload_file_size')
+						.html(plupload.formatSize(file.size));			
 				break;
 		}
 		actionClass += ' ui-state-default plupload_file';
@@ -612,10 +617,13 @@ $.widget("ui.plupload", {
 
 		file_html = '<li class="plupload_file ui-state-default" id="%id%">' +
 						'<div class="plupload_file_thumb ui-widget-content"> </div>' +
-						'<div class="plupload_file_name">%name%</div>' +						
+						'<div class="plupload_file_name" title="%name%">%name%</div>' +						
 						'<div class="plupload_file_action"><div class="ui-icon"></div></div>' +
 						'<div class="plupload_file_size">%size%</div>' +
-						'<div class="plupload_file_status">%percent%</div>' +
+						'<div class="plupload_file_status">' +
+							'<div class="plupload_file_progress ui-widget-header" style="width: 0%"> </div>' + 
+							'<span class="plupload_file_percent">%percent%</span>' +
+						'</div>' +
 						'<div class="plupload_clear plupload_file_fields"> </div>' +
 					'</li>';
 
