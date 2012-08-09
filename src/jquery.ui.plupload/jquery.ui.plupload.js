@@ -199,7 +199,6 @@ $.widget("ui.plupload", {
 		this._initUploader();
 	},
 
-
 	_initUploader: function() {
 		var 
 		  self = this
@@ -414,17 +413,19 @@ $.widget("ui.plupload", {
 		
 		self.uploader.settings[key] = value;	
 	},
-	
+
 	
 	start: function() {
 		this.uploader.start();
 		this._trigger('start', null);
 	},
+
 	
 	stop: function() {
 		this.uploader.stop();
 		this._trigger('stop', null);
 	},
+
 	
 	getFile: function(id) {
 		var file;
@@ -436,24 +437,85 @@ $.widget("ui.plupload", {
 		}
 		return file;
 	},
+
 	
-	removeFile: function(id) {
-		var file = this.getFile(id);
-		if (file) {
-			this.uploader.removeFile(file);
+	removeFile: function(file) {
+		if (plupload.typeOf(file) === 'string') {
+			file = this.getFile(id);
 		}
+		this._removeFiles(file);
 	},
+
 	
 	clearQueue: function() {
 		this.uploader.splice();
 	},
+
 	
 	getUploader: function() {
 		return this.uploader;
 	},
+
 	
 	refresh: function() {
 		this.uploader.refresh();
+	},
+
+	notify: function(type, message) {
+		var popup = $(
+			'<div class="plupload_message">' + 
+				'<span class="plupload_message_close ui-icon ui-icon-circle-close" title="'+_('Close')+'"></span>' +
+				'<p><span class="ui-icon"></span>' + message + '</p>' +
+			'</div>'
+		);
+					
+		popup
+			.addClass('ui-state-' + (type === 'error' ? 'error' : 'highlight'))
+			.find('p .ui-icon')
+				.addClass('ui-icon-' + (type === 'error' ? 'alert' : 'info'))
+				.end()
+			.find('.plupload_message_close')
+				.click(function() {
+					popup.remove();	
+				})
+				.end();
+		
+		$('.plupload_header_content', this.container).append(popup);
+	},
+	
+
+	destroy: function() {
+		// unbind all button events
+		$('.plupload_button', this.element).unbind();
+		
+		// destroy buttons
+		if ($.ui.button) {
+			$('.plupload_add, .plupload_start, .plupload_stop', this.container)
+				.button('destroy');
+		}
+		
+		// destroy progressbar
+		if ($.ui.progressbar) {
+			 this.progressbar.progressbar('destroy');	
+		}
+		
+		// destroy sortable behavior
+		if ($.ui.sortable && this.options.sortable) {
+			$('tbody', this.filelist).sortable('destroy');
+		}
+
+		this._removeFiles(this.uploader.files);
+		
+		// destroy uploader instance
+		this.uploader.destroy();
+		
+		// restore the elements initial state
+		this.element
+			.empty()
+			.html(this.contents_bak);
+		this.contents_bak = '';
+
+		$.Widget.prototype.destroy.apply(this);
 	},
 	
 	
@@ -651,9 +713,17 @@ $.widget("ui.plupload", {
 			img = new o.Image;
 
 			img.onload = function() {
-				img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { width: 100, height: 60, crop: true});
+				var img2 = img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { 
+					width: 100, 
+					height: 60, 
+					crop: true
+				});
+
+				if (!file.imgs) {
+					file.imgs = [];
+				}
 				
-				self.imgs[file.id] = img; // save object in global private hash, for cleanup purposes
+				file.imgs.push(img, img2); // save object in global private hash, for cleanup purposes
 			};
 
 			img.load(file.getSource());
@@ -683,9 +753,11 @@ $.widget("ui.plupload", {
 		}
 
 		$.each(files, function(i, file) {
-			if (self.imgs[file.id]) {
-				self.imgs[file.id].destroy();
-				delete self.imgs[file.id];
+			if (file.imgs && file.imgs.length) {
+				$.each(file.imgs, function(ii, img) {
+					img.destroy();
+				});
+				file.imgs = [];
 			}
 			$('#' + file.id).remove();
 			up.removeFile(file);
@@ -702,7 +774,6 @@ $.widget("ui.plupload", {
 		this._trigger('updatelist', null, self.filelist);
 	},
 	
-
 
 	_viewChanged: function(type) {
 		var $content = $('.plupload_content', this.container);
@@ -822,70 +893,6 @@ $.widget("ui.plupload", {
 				Array.prototype.splice.apply(self.uploader.files, files);	
 			}
 		});		
-	},
-	
-	notify: function(type, message) {
-		var popup = $(
-			'<div class="plupload_message">' + 
-				'<span class="plupload_message_close ui-icon ui-icon-circle-close" title="'+_('Close')+'"></span>' +
-				'<p><span class="ui-icon"></span>' + message + '</p>' +
-			'</div>'
-		);
-					
-		popup
-			.addClass('ui-state-' + (type === 'error' ? 'error' : 'highlight'))
-			.find('p .ui-icon')
-				.addClass('ui-icon-' + (type === 'error' ? 'alert' : 'info'))
-				.end()
-			.find('.plupload_message_close')
-				.click(function() {
-					popup.remove();	
-				})
-				.end();
-		
-		$('.plupload_header_content', this.container).append(popup);
-	},
-	
-
-
-	destroy: function() {
-		// unbind all button events
-		$('.plupload_button', this.element).unbind();
-		
-		// destroy buttons
-		if ($.ui.button) {
-			$('.plupload_add, .plupload_start, .plupload_stop', this.container)
-				.button('destroy');
-		}
-		
-		// destroy progressbar
-		if ($.ui.progressbar) {
-			 this.progressbar.progressbar('destroy');	
-		}
-		
-		// destroy sortable behavior
-		if ($.ui.sortable && this.options.sortable) {
-			$('tbody', this.filelist).sortable('destroy');
-		}
-
-		// call destroy on every related image object
-		if (!plupload.isEmptyObj(this.imgs)) {
-			$.each(this.imgs, function(id, img) {
-				img.destroy();
-			});
-			this.imgs = {};
-		}
-		
-		// destroy uploader instance
-		this.uploader.destroy();
-		
-		// restore the elements initial state
-		this.element
-			.empty()
-			.html(this.contents_bak);
-		this.contents_bak = '';
-
-		$.Widget.prototype.destroy.apply(this);
 	}
 });
 
