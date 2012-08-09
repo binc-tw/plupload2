@@ -115,12 +115,17 @@ $.widget("ui.plupload", {
 		// widget specific
 		dragdrop : true, 
 		multiple_queues: true, // re-use widget by default
-		
 		buttons: {
 			browse: true,
 			start: true,
 			stop: true	
 		},
+		views: {
+			list: true,
+			thumbs: false
+		},
+		default_view: 'list',
+		remember_view: true, // requires jquery cookie plugin, otherwise disabled even if set to true
 		autostart: false,
 		sortable: false,
 		rename: false,
@@ -156,19 +161,7 @@ $.widget("ui.plupload", {
 				unselectable: 'on'
 			});
 		
-		// view mode
-		this.view_switcher = $('.plupload_view_switch', this.container);
-		
-		if ($.ui.button) {
-			this.view_switcher.buttonset();
-		}
-
-		this.view_switcher.find('.plupload_button').click(function() {
-			var type = $(this).attr('for').replace(/^plupload_view_/, '');
-			self._viewChanged(type);
-		});
-
-		self._viewChanged('list'); // default
+		self._enableViewSwitcher();
 
 		// buttons
 		this.browse_button = $('.plupload_add', this.container).attr('id', id + '_browse');
@@ -705,9 +698,49 @@ $.widget("ui.plupload", {
 
 
 	_viewChanged: function(type) {
+		// update or write a new cookie
+		if (this.options.remember_view && $.cookie) {
+			$.cookie('plupload_ui_view', type, { expires: 7, path: '/' });
+		} 
+
 		this.content.removeClass('plupload_view_list plupload_view_thumbs').addClass('plupload_view_' + type); 
 		this.view_mode = type;
 		this._trigger('viewchanged', type);
+	},
+
+
+	_enableViewSwitcher: function() {
+		var 
+		  self = this
+		, type
+		, switcher = $('.plupload_view_switch', this.container)
+		, button
+		;
+		
+		if ($.ui.button) {
+			switcher.buttonset();
+		}
+
+		switcher.find('.plupload_button').click(function() {
+			type = $(this).attr('for').replace(/^plupload_view_/, '');
+			self._viewChanged(type);
+		});
+
+		if (this.options.remember_view && $.cookie) {
+			type = $.cookie('plupload_ui_view');
+		}
+
+		// if wierd case, bail out to default
+		if (!~plupload.inArray(type, ['list', 'thumbs'])) {
+			type = this.options.default_view;
+		}
+
+		// if view not active - happens when switcher wasn't clicked manually
+		button = switcher.find('[for="plupload_view_'+type+'"]');
+		if (button.length) {
+			button.trigger('click');
+			return; 
+		}
 	},
 	
 	

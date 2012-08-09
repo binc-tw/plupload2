@@ -12,6 +12,7 @@
 
 <script type="text/javascript" src="../js/moxie.full.js"></script>
 
+<script type="text/javascript" src="../js/jquery.cookie.js"></script>
 
 <script type="text/javascript" src="../src/plupload.js"></script>
 <script type="text/javascript" src="../src/jquery.ui.plupload/jquery.ui.plupload.js"></script>
@@ -38,8 +39,17 @@
 		url: 'upload.php',
 		chunk_size: '5mb',
 		multi_selection: true,
+		filters : [
+			{title : "Image files", extensions : "jpg,jpeg,gif,png"},
+			{title : "Zip files", extensions : "zip"}
+		],
 		flash_swf_url: '../src/moxie/js/Moxie.swf',
 
+		views: {
+			list: true,
+			thumbs: true
+		},
+		remember_view: true, // requires jquery cookie plugin
 		sortable: true,
 
 		required_features: {
