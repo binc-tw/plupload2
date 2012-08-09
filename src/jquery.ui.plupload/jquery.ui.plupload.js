@@ -125,7 +125,7 @@ $.widget("ui.plupload", {
 			thumbs: false
 		},
 		default_view: 'list',
-		remember_view: true, // requires jquery cookie plugin, otherwise disabled even if set to true
+		remember_view: true, // requires: https://github.com/carhartl/jquery-cookie, otherwise disabled even if set to true
 		autostart: false,
 		sortable: false,
 		rename: false,
@@ -151,8 +151,6 @@ $.widget("ui.plupload", {
 		
 		// container, just in case
 		this.container = $('.plupload_container', this.element).attr('id', id + '_container');	
-
-		this.content = $('.plupload_content', this.container);
 		
 		// list of files, may become sortable
 		this.filelist = $('.plupload_filelist_content', this.container)
@@ -198,10 +196,19 @@ $.widget("ui.plupload", {
 			});
 					
 		// initialize uploader instance
-		uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend({ 
+		this._initUploader();
+	},
+
+
+	_initUploader: function() {
+		var 
+		  self = this
+		, id = this.id
+		, uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend({ 
 			container: id ,
 			browse_button: id + '_browse'
-		}, this.options));
+		}, this.options))
+		;
 		
 		// do not show UI if no runtime can be initialized
 		uploader.bind('Error', function(up, err) {
@@ -301,7 +308,6 @@ $.widget("ui.plupload", {
 		
 		uploader.bind('FileUploaded', function(up, file) {
 			self._handleFileStatus(file);
-			
 			self._trigger('uploaded', null, { up: up, file: file } );
 		});
 		
@@ -377,6 +383,7 @@ $.widget("ui.plupload", {
 			}
 		});
 	},
+
 	
 	_setOption: function(key, value) {
 		var self = this;
@@ -698,12 +705,14 @@ $.widget("ui.plupload", {
 
 
 	_viewChanged: function(type) {
+		var $content = $('.plupload_content', this.container);
+
 		// update or write a new cookie
 		if (this.options.remember_view && $.cookie) {
 			$.cookie('plupload_ui_view', type, { expires: 7, path: '/' });
 		} 
 
-		this.content.removeClass('plupload_view_list plupload_view_thumbs').addClass('plupload_view_' + type); 
+		$content.removeClass('plupload_view_list plupload_view_thumbs').addClass('plupload_view_' + type); 
 		this.view_mode = type;
 		this._trigger('viewchanged', type);
 	},
