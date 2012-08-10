@@ -60,12 +60,13 @@ function renderUI(obj) {
 						'<div class="plupload_scroll">' +
 							'<div class="plupload_droptext">' + _("Drag files here.") + '</div>' +
 							'<ul class="plupload_filelist_content"></ul>' +
+							'<div class="plupload_clearer">&nbsp;</div>' +
 						'</div>' +
 						
 					'</div>' +
 
-					'<table class="plupload_filelist ui-widget-header">' +
-					'<tr class="plupload_filelist_footer">' +
+					'<table class="plupload_filelist plupload_filelist_footer ui-widget-header">' +
+					'<tr>' +
 						'<td class="plupload_cell plupload_file_name">' +
 
 							'<div class="plupload_buttons"><!-- Visible -->' +
@@ -151,6 +152,10 @@ $.widget("ui.plupload", {
 		
 		// container, just in case
 		this.container = $('.plupload_container', this.element).attr('id', id + '_container');	
+
+		if ($.fn.resizable) {
+			this.container.resizable({ handles: 's' });
+		}
 		
 		// list of files, may become sortable
 		this.filelist = $('.plupload_filelist_content', this.container)
@@ -698,9 +703,11 @@ $.widget("ui.plupload", {
 			$('tbody', self.filelist).sortable('destroy');	
 		}
 
+		var queue = [];
+
 		// loop over files to add
 		$.each(files, function(i, file) {
-			var img;
+			
 
 			self.filelist.append(file_html.replace(/%(\w+)%/g, function($0, $1) {
 				if ('size' === $1) {
@@ -710,26 +717,32 @@ $.widget("ui.plupload", {
 				}
 			}));
 
-			img = new o.Image;
+			queue.push(function(cb) {
+				var img;
+				img = new o.Image;
 
-			img.onload = function() {
-				var img2 = img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { 
-					width: 100, 
-					height: 60, 
-					crop: true
-				});
-
-				if (!file.imgs) {
-					file.imgs = [];
-				}
-				
-				file.imgs.push(img, img2); // save object in global private hash, for cleanup purposes
-			};
-
-			img.load(file.getSource());
+				img.onload = function() {
+					img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { 
+						width: 100, 
+						height: 60, 
+						crop: true
+					});
+					img.destroy();
+					cb();
+				};
+				img.onerror = function() {
+					// error logic here
+					cb();
+				};
+				img.load(file.getSource());
+			});
 
 			self._handleFileStatus(file);
 		});
+
+		if (queue.length) {
+			self._series(queue);
+		}
 
 		// re-enable sortable
 		if (this.options.sortable && $.ui.sortable) {
@@ -739,6 +752,22 @@ $.widget("ui.plupload", {
 		this._trigger('updatelist', null, this.filelist);
 	},
 
+	_series: function(queue, cb) {
+		var i = 0, length = queue.length;
+
+		if (o.typeOf(cb) !== 'function') {
+			cb = function() {};
+		}
+
+		function callNext(i) {
+			if (o.typeOf(queue[i]) === 'function') {
+				queue[i](function() {
+					++i < length ? callNext(i) : cb();
+				});
+			}
+		}
+		callNext(i);
+	},
 
 	_removeFiles: function(files) {
 		var self = this, up = this.uploader;

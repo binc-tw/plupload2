@@ -12,9 +12,9 @@
 
 <script type="text/javascript" src="../js/moxie.full.js"></script>
 
-<script type="text/javascript" src="../js/jquery.cookie.js"></script>
 
 <script type="text/javascript" src="../src/plupload.js"></script>
+<script type="text/javascript" src="../src/jquery.ui.plupload/js/jquery.cookie.js"></script>
 <script type="text/javascript" src="../src/jquery.ui.plupload/jquery.ui.plupload.js"></script>
 
 <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
@@ -35,7 +35,7 @@
 
 	<script>
 	$('#filepicker').plupload({
-		runtimes: "html5",
+		runtimes: "html5,flash",
 		url: 'upload.php',
 		chunk_size: '5mb',
 		multi_selection: true,
