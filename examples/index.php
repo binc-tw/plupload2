@@ -35,7 +35,7 @@
 
 	<script>
 	$('#filepicker').plupload({
-		runtimes: "html5,flash",
+		runtimes: "flash",
 		url: 'upload.php',
 		chunk_size: '5mb',
 		multi_selection: true,
@@ -43,7 +43,7 @@
 			{title : "Image files", extensions : "jpg,jpeg,gif,png"},
 			{title : "Zip files", extensions : "zip"}
 		],
-		flash_swf_url: '../src/moxie/js/Moxie.swf',
+		flash_swf_url: '../js/Moxie.swf',
 
 		views: {
 			list: true,

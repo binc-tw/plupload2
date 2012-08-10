@@ -888,6 +888,7 @@ plupload.Uploader = function(settings) {
 			// Initialize
 			try {
 				fileInput = new o.FileInput({
+					accept: settings.filters,
 					runtime_order: settings.runtimes,
 					name: settings.file_data_name,
 					multiple: settings.multi_selection,
