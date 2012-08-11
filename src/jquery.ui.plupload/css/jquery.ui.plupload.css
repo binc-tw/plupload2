@@ -2,7 +2,10 @@
    Plupload
 ------------------------------------------------------------------- */
 
-.plupload_button {cursor: pointer;}
+.plupload_button {
+	cursor: pointer;
+	outline: none;
+}
 
 .plupload_wrapper {
 	font: normal 11px Verdana,sans-serif;
@@ -16,7 +19,6 @@
 
 .plupload .plupload_container input {width: 98%;}
 .plupload .plupload_filelist_footer {border-width: 1px 0 0 0}
-.plupload .plupload_filelist_header {border-width: 0 0 1px 0}
 div.plupload .plupload_file {border-width: 0 0 1px 0}
 div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 
@@ -25,7 +27,7 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 }
 
 .plupload_header_content {
-	min-height: 56px;
+	height: 56px;
 	padding: 0 160px 0 60px;
 	position: relative;
 }
@@ -82,6 +84,8 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 
 .plupload_filelist {
 	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
 	margin: 0;
 	padding: 0;
 	width: 100%;
@@ -122,6 +126,10 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	bottom: 0;
 	left: 0;
 	right: 0;
+}
+
+.plupload_buttons {
+	position: relative;
 }
 
 /* list view */

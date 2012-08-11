@@ -48,8 +48,8 @@ function renderUI(obj) {
 
 					'<div class="plupload_content">' +
 
-						'<table class="plupload_filelist ui-widget-header">' +
-						'<tr class="plupload_filelist_header">' +
+						'<table class="plupload_filelist plupload_filelist_header ui-widget-header">' +
+						'<tr>' +
 							'<td class="plupload_cell plupload_file_name">' + _('Filename') + '</td>' +
 							'<td class="plupload_cell plupload_file_status">' + _('Status') + '</td>' +
 							'<td class="plupload_cell plupload_file_size">' + _('Size') + '</td>' +
@@ -208,8 +208,9 @@ $.widget("ui.plupload", {
 		var 
 		  self = this
 		, id = this.id
+		, buttonsContainer = $('.plupload_buttons', this.element).attr('id', id + '_buttons')
 		, uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend({ 
-			container: id ,
+			container: id + '_buttons',
 			browse_button: id + '_browse'
 		}, this.options))
 		;
@@ -684,12 +685,12 @@ $.widget("ui.plupload", {
 
 		file_html = '<li class="plupload_file ui-state-default" id="%id%">' +
 						'<div class="plupload_file_thumb ui-widget-content"> </div>' +
-						'<div class="plupload_file_name" title="%name%">%name%</div>' +						
-						'<div class="plupload_file_action"><div class="ui-icon"></div></div>' +
-						'<div class="plupload_file_size">%size%</div>' +
+						'<div class="plupload_file_name" title="%name%">%name% </div>' +						
+						'<div class="plupload_file_action"><div class="ui-icon"> </div></div>' +
+						'<div class="plupload_file_size">%size% </div>' +
 						'<div class="plupload_file_status">' +
 							'<div class="plupload_file_progress ui-widget-header" style="width: 0%"> </div>' + 
-							'<span class="plupload_file_percent">%percent%</span>' +
+							'<span class="plupload_file_percent">%percent% </span>' +
 						'</div>' +
 						'<div class="plupload_clear plupload_file_fields"> </div>' +
 					'</li>';
