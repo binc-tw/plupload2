@@ -612,7 +612,6 @@ plupload.Uploader = function(settings) {
 				});
 			}
 
-
 			// Convert settings
 			settings.chunk_size = plupload.parseSize(settings.chunk_size);
 			settings.max_file_size = plupload.parseSize(settings.max_file_size);

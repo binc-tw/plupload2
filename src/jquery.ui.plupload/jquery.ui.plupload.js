@@ -725,7 +725,8 @@ $.widget("ui.plupload", {
 					img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { 
 						width: 100, 
 						height: 60, 
-						crop: true
+						crop: true,
+						swf_url: o.resolveUrl(self.options.flash_swf_url)
 					});
 					img.destroy();
 					cb();
@@ -906,8 +907,8 @@ $.widget("ui.plupload", {
 		filelist.sortable({
 			items: '.plupload_delete',
 			
-			helper: 'clone',
-			
+			cancel: 'object',
+
 			stop: function(e, ui) {
 				var i, length, idx, files = [];
 				
