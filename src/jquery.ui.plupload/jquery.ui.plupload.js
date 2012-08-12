@@ -171,7 +171,8 @@ $.widget("ui.plupload", {
 		
 		if ($.ui.button) {
 			this.browse_button.button({
-				icons: { primary: 'ui-icon-circle-plus' }
+				icons: { primary: 'ui-icon-circle-plus' },
+				disabled: true
 			});
 			
 			this.start_button.button({
@@ -225,11 +226,13 @@ $.widget("ui.plupload", {
 			if (!self.options.buttons.browse) {
 				self.browse_button.button('disable').hide();
 				up.disableBrowse(true);
+			} else {
+				self.browse_button.button('enable');
 			}
 			
 			if (!self.options.buttons.start) {
 				self.start_button.button('disable').hide();
-			}
+			} 
 			
 			if (!self.options.buttons.stop) {
 				self.stop_button.button('disable').hide();
