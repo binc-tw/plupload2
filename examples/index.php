@@ -47,11 +47,12 @@
 
 		views: {
 			list: true,
-			thumbs: true
+			thumbs: false
 		},
 		default_view: 'thumbs',
 		remember_view: true, // requires jquery cookie plugin
 		sortable: true,
+		rename: true,
 
 		required_features: {
 				

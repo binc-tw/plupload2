@@ -134,6 +134,7 @@
 .plupload_view_list .plupload_file {
 	border-left: none;
 	border-right: none;
+	border-top: none;
 }
 
 html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't understand this */

@@ -679,7 +679,7 @@ $.widget("ui.plupload", {
 
 
 	_addFiles: function(files) {
-		var self = this, file_html;
+		var self = this, file_html, queue = [];
 
 		file_html = '<li class="plupload_file ui-state-default" id="%id%">' +
 						'<div class="plupload_file_thumb"> </div>' +
@@ -702,8 +702,6 @@ $.widget("ui.plupload", {
 			$('tbody', self.filelist).sortable('destroy');	
 		}
 
-		var queue = [];
-
 		// loop over files to add
 		$.each(files, function(i, file) {
 
@@ -715,30 +713,32 @@ $.widget("ui.plupload", {
 				}
 			}));
 
-			queue.push(function(cb) {
-				var img;
-				img = new o.Image;
+			if (self.options.views.thumbs) {
+				queue.push(function(cb) {
+					var img;
+					img = new o.Image;
 
-				img.onload = function() {
-					img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { 
-						width: 100, 
-						height: 60, 
-						crop: true,
-						swf_url: o.resolveUrl(self.options.flash_swf_url)
-					});
-					cb();
-				};
+					img.onload = function() {
+						img.embed($('#' + file.id + ' .plupload_file_thumb', self.filelist)[0], { 
+							width: 100, 
+							height: 60, 
+							crop: true,
+							swf_url: o.resolveUrl(self.options.flash_swf_url)
+						});
+						cb();
+					};
 
-				img.onembedded = function() {
-					img.destroy();
-				};
+					img.onembedded = function() {
+						img.destroy();
+					};
 
-				img.onerror = function() {
-					// error logic here
-					cb();
-				};
-				img.load(file.getSource());
-			});
+					img.onerror = function() {
+						// error logic here
+						cb();
+					};
+					img.load(file.getSource());
+				});
+			}
 
 			self._handleFileStatus(file);
 		});
@@ -829,11 +829,30 @@ $.widget("ui.plupload", {
 		  self = this
 		, type
 		, switcher = $('.plupload_view_switch', this.container)
+		, buttons
 		, button
 		;
-		
-		if ($.ui.button) {
+
+		$.each(self.options.views, function(type, on) {
+			if (!on) {
+				switcher.find('[for="plupload_view_' + type + '"], #plupload_view_' + type).remove();
+			}
+		});
+
+		// check if any visible left
+		buttons = switcher.find('.plupload_button:visible');
+
+		if ($.ui.button && buttons.length > 1) {
 			switcher.buttonset();
+		} else if (buttons.length === 1) {
+			switcher.hide();
+			type = buttons.attr('for').replace(/^plupload_view_/, '');
+			self._viewChanged(type);
+			return;
+		} else {
+			switcher.show();
+			self._viewChanged(this.options.default_view);
+			return;
 		}
 
 		switcher.find('.plupload_button').click(function() {
