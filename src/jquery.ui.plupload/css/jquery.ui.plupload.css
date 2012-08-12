@@ -278,8 +278,8 @@ html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't unders
 
 .plupload_message {
 	position: absolute;
-	top: 0px;
-	left: 0px;	
+	top: -1px;
+	left: -1px;	
 	height: 100%;
 	width: 100%;
 }

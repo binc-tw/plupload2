@@ -208,7 +208,7 @@ $.widget("ui.plupload", {
 		, id = this.id
 		, buttonsContainer = $('.plupload_buttons', this.element).attr('id', id + '_buttons')
 		, uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend({ 
-			container: id,
+			container: id + '_buttons',
 			browse_button: id + '_browse'
 		}, this.options))
 		;
@@ -484,7 +484,7 @@ $.widget("ui.plupload", {
 				})
 				.end();
 		
-		$('.plupload_header_content', this.container).append(popup);
+		$('.plupload_header', this.container).append(popup);
 	},
 	
 
@@ -755,6 +755,7 @@ $.widget("ui.plupload", {
 		this._trigger('updatelist', null, this.filelist);
 	},
 
+
 	_series: function(queue, cb) {
 		var i = 0, length = queue.length;
 
@@ -771,6 +772,7 @@ $.widget("ui.plupload", {
 		}
 		callNext(i);
 	},
+
 
 	_removeFiles: function(files) {
 		var self = this, up = this.uploader;

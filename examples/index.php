@@ -35,7 +35,7 @@
 
 	<script>
 	$('#filepicker').plupload({
-		runtimes: "flash",
+		runtimes: "html5,flash",
 		url: 'upload.php',
 		chunk_size: '5mb',
 		multi_selection: true,
@@ -47,7 +47,7 @@
 
 		views: {
 			list: true,
-			thumbs: false
+			thumbs: true
 		},
 		default_view: 'thumbs',
 		remember_view: true, // requires jquery cookie plugin
