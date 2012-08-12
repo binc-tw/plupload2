@@ -15,12 +15,12 @@
 .plupload_container {
 	_height: 300px;
 	min-height: 300px;
+	position: relative;
 }
 
-.plupload .plupload_container input {width: 98%;}
-.plupload .plupload_filelist_footer {border-width: 1px 0 0 0}
-div.plupload .plupload_file {border-width: 0 0 1px 0}
-div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
+.plupload_filelist_footer {border-width: 1px 0 0 0}
+.plupload_file {border-width: 0 0 1px 0}
+.plupload_container .plupload_header {border-width: 0 0 1px 0; position: relative;}
 
 .plupload_file .ui-icon {
 	cursor:pointer;	
@@ -67,19 +67,12 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 
 .plupload_content {
 	position: absolute;
-	top: 56px;
+	top: 87px;
 	bottom: 44px;
 	left: 0;
 	right: 0;
-}
-
-.plupload_scroll {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
 	overflow-y: auto;
+	width: 100%;
 }
 
 .plupload_filelist {
@@ -113,12 +106,17 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	position: absolute;
 	left: 6px;
 	top: 6px;
+	background: #eee url(../img/loading.gif) center no-repeat;
 }
 
 .plupload_file_name {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.plupload_filelist_header {
+	border-top: none;
 }
 
 .plupload_filelist_footer {
@@ -128,18 +126,17 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	right: 0;
 }
 
-.plupload_buttons {
+.plupload_buttons { 
 	position: relative;
 }
 
 /* list view */
-.plupload_view_list .plupload_scroll {
-	top: 31px;
-}
-
 .plupload_view_list .plupload_file {
 	border-left: none;
 	border-right: none;
+}
+
+html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't understand this */
 	width: 100%;
 }
 
@@ -173,6 +170,10 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 
 
 /* thumbs view */
+.plupload_view_thumbs .plupload_content {
+	top: 57px;
+}
+
 .plupload_view_thumbs .plupload_filelist_header {
 	display: none;
 }
@@ -189,23 +190,23 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	height: 60px;
 }
 
-.plupload_view_thumbs .plupload_file_action {
+.plupload_view_thumbs div.plupload_file_action {
 	position: absolute;
 	top: 0;
 	right: 0;
 }
 
-.plupload_view_thumbs .plupload_file_name {
+.plupload_view_thumbs div.plupload_file_name {
 	padding: 0;
 	font-weight: bold;
 }
 
-.plupload_view_thumbs .plupload_file_size {
+.plupload_view_thumbs div.plupload_file_size {
 	font-size: 0.8em;
 	font-weight: normal;
 }
 
-.plupload_view_thumbs .plupload_file_status {
+.plupload_view_thumbs div.plupload_file_status {
 	position: absolute;
 	top: 67px;
 	left: 6px;
@@ -215,7 +216,7 @@ div.plupload div.plupload_header {border-width: 0 0 1px 0; position: relative;}
 	text-indent: -999px;
 }
 
-.plupload_view_thumbs .plupload_file_progress {
+.plupload_view_thumbs div.plupload_file_progress {
 	border: none;
 	height: 100%;
 }

@@ -32,68 +32,62 @@ function renderUI(obj) {
 	obj.html(
 		'<div class="plupload_wrapper">' +
 			'<div class="ui-widget-content plupload_container">' +
-				'<div class="plupload">' +
-					'<div class="ui-state-default ui-widget-header plupload_header">' +
-						'<div class="plupload_header_content">' +
-							'<div class="plupload_logo"> </div>' +
-							'<div class="plupload_header_title">' + _('Select files') + '</div>' +
-							'<div class="plupload_header_text">' + _('Add files to the upload queue and click the start button.') + '</div>' +
-							'<div class="plupload_view_switch">' +
-								'<input type="radio" id="plupload_view_list" name="view_mode" checked="checked" /> <label class="plupload_button" for="plupload_view_list">List</label>' +
-								//'<input type="radio" id="plupload_view_thumblist" name="view_mode" /> <label class="plupload_button" for="plupload_view_thumblist">Thumb List</label>' +
-								'<input type="radio" id="plupload_view_thumbs" name="view_mode" /> <label class="plupload_button"  for="plupload_view_thumbs">Thumbnails</label>' +
-							'</div>' +
+				'<div class="ui-state-default ui-widget-header plupload_header">' +
+					'<div class="plupload_header_content">' +
+						'<div class="plupload_logo"> </div>' +
+						'<div class="plupload_header_title">' + _('Select files') + '</div>' +
+						'<div class="plupload_header_text">' + _('Add files to the upload queue and click the start button.') + '</div>' +
+						'<div class="plupload_view_switch">' +
+							'<input type="radio" id="plupload_view_list" name="view_mode" checked="checked" /> <label class="plupload_button" for="plupload_view_list">List</label>' +
+							//'<input type="radio" id="plupload_view_thumblist" name="view_mode" /> <label class="plupload_button" for="plupload_view_thumblist">Thumb List</label>' +
+							'<input type="radio" id="plupload_view_thumbs" name="view_mode" /> <label class="plupload_button"  for="plupload_view_thumbs">Thumbnails</label>' +
 						'</div>' +
 					'</div>' +
-
-					'<div class="plupload_content">' +
-
-						'<table class="plupload_filelist plupload_filelist_header ui-widget-header">' +
-						'<tr>' +
-							'<td class="plupload_cell plupload_file_name">' + _('Filename') + '</td>' +
-							'<td class="plupload_cell plupload_file_status">' + _('Status') + '</td>' +
-							'<td class="plupload_cell plupload_file_size">' + _('Size') + '</td>' +
-							'<td class="plupload_cell plupload_file_action">&nbsp;</td>' +
-						'</tr>' +
-						'</table>' +
-
-						'<div class="plupload_scroll">' +
-							'<div class="plupload_droptext">' + _("Drag files here.") + '</div>' +
-							'<ul class="plupload_filelist_content"></ul>' +
-							'<div class="plupload_clearer">&nbsp;</div>' +
-						'</div>' +
-						
-					'</div>' +
-
-					'<table class="plupload_filelist plupload_filelist_footer ui-widget-header">' +
-					'<tr>' +
-						'<td class="plupload_cell plupload_file_name">' +
-
-							'<div class="plupload_buttons"><!-- Visible -->' +
-								'<a class="plupload_button plupload_add">' + _('Add Files') + '</a>&nbsp;' +
-								'<a class="plupload_button plupload_start">' + _('Start Upload') + '</a>&nbsp;' +
-								'<a class="plupload_button plupload_stop plupload_hidden">'+_('Stop Upload') + '</a>&nbsp;' +
-							'</div>' +
-
-							'<div class="plupload_started plupload_hidden"><!-- Hidden -->' +
-
-								'<div class="plupload_progress plupload_right">' +
-									'<div class="plupload_progress_container"></div>' +
-								'</div>' +
-
-								'<div class="plupload_cell plupload_upload_status"></div>' +
-
-								'<div class="plupload_clearer">&nbsp;</div>' +
-
-							'</div>' +
-						'</td>' +
-						'<td class="plupload_file_status"><span class="plupload_total_status">0%</span></td>' +
-						'<td class="plupload_file_size"><span class="plupload_total_file_size">0 kb</span></td>' +
-						'<td class="plupload_file_action"></td>' +
-					'</tr>' +
-					'</table>' +
-
 				'</div>' +
+
+				'<table class="plupload_filelist plupload_filelist_header ui-widget-header">' +
+				'<tr>' +
+					'<td class="plupload_cell plupload_file_name">' + _('Filename') + '</td>' +
+					'<td class="plupload_cell plupload_file_status">' + _('Status') + '</td>' +
+					'<td class="plupload_cell plupload_file_size">' + _('Size') + '</td>' +
+					'<td class="plupload_cell plupload_file_action">&nbsp;</td>' +
+				'</tr>' +
+				'</table>' +
+
+				'<div class="plupload_content">' +
+					'<div class="plupload_droptext">' + _("Drag files here.") + '</div>' +
+					'<ul class="plupload_filelist_content"> </ul>' +
+					'<div class="plupload_clearer">&nbsp;</div>' +
+				'</div>' +
+					
+				'<table class="plupload_filelist plupload_filelist_footer ui-widget-header">' +
+				'<tr>' +
+					'<td class="plupload_cell plupload_file_name">' +
+
+						'<div class="plupload_buttons"><!-- Visible -->' +
+							'<a class="plupload_button plupload_add">' + _('Add Files') + '</a>&nbsp;' +
+							'<a class="plupload_button plupload_start">' + _('Start Upload') + '</a>&nbsp;' +
+							'<a class="plupload_button plupload_stop plupload_hidden">'+_('Stop Upload') + '</a>&nbsp;' +
+						'</div>' +
+
+						'<div class="plupload_started plupload_hidden"><!-- Hidden -->' +
+
+							'<div class="plupload_progress plupload_right">' +
+								'<div class="plupload_progress_container"></div>' +
+							'</div>' +
+
+							'<div class="plupload_cell plupload_upload_status"></div>' +
+
+							'<div class="plupload_clearer">&nbsp;</div>' +
+
+						'</div>' +
+					'</td>' +
+					'<td class="plupload_file_status"><span class="plupload_total_status">0%</span></td>' +
+					'<td class="plupload_file_size"><span class="plupload_total_file_size">0 kb</span></td>' +
+					'<td class="plupload_file_action"></td>' +
+				'</tr>' +
+				'</table>' +
+
 			'</div>' +
 			'<input class="plupload_count" value="0" type="hidden">' +
 		'</div>'
@@ -134,7 +128,6 @@ $.widget("ui.plupload", {
 	},
 	
 	FILE_COUNT_ERROR: -9001,
-
 	
 	_create: function() {
 		var self = this, id, uploader;
@@ -153,8 +146,13 @@ $.widget("ui.plupload", {
 		// container, just in case
 		this.container = $('.plupload_container', this.element).attr('id', id + '_container');	
 
+		this.content = $('.plupload_content', this.element);
+		
 		if ($.fn.resizable) {
-			this.container.resizable({ handles: 's' });
+			this.container.resizable({ 
+				handles: 's',
+				minHeight: 300
+			});
 		}
 		
 		// list of files, may become sortable
@@ -210,7 +208,7 @@ $.widget("ui.plupload", {
 		, id = this.id
 		, buttonsContainer = $('.plupload_buttons', this.element).attr('id', id + '_buttons')
 		, uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend({ 
-			container: id + '_buttons',
+			container: id,
 			browse_button: id + '_browse'
 		}, this.options))
 		;
@@ -684,7 +682,7 @@ $.widget("ui.plupload", {
 		var self = this, file_html;
 
 		file_html = '<li class="plupload_file ui-state-default" id="%id%">' +
-						'<div class="plupload_file_thumb ui-widget-content"> </div>' +
+						'<div class="plupload_file_thumb"> </div>' +
 						'<div class="plupload_file_name" title="%name%">%name% </div>' +						
 						'<div class="plupload_file_action"><div class="ui-icon"> </div></div>' +
 						'<div class="plupload_file_size">%size% </div>' +
@@ -708,7 +706,6 @@ $.widget("ui.plupload", {
 
 		// loop over files to add
 		$.each(files, function(i, file) {
-			
 
 			self.filelist.append(file_html.replace(/%(\w+)%/g, function($0, $1) {
 				if ('size' === $1) {
@@ -729,9 +726,13 @@ $.widget("ui.plupload", {
 						crop: true,
 						swf_url: o.resolveUrl(self.options.flash_swf_url)
 					});
-					img.destroy();
 					cb();
 				};
+
+				img.onembedded = function() {
+					img.destroy();
+				};
+
 				img.onerror = function() {
 					// error logic here
 					cb();
@@ -807,14 +808,17 @@ $.widget("ui.plupload", {
 	
 
 	_viewChanged: function(type) {
-		var $content = $('.plupload_content', this.container);
-
 		// update or write a new cookie
 		if (this.options.remember_view && $.cookie) {
 			$.cookie('plupload_ui_view', type, { expires: 7, path: '/' });
 		} 
+	
+		// ugly fix for IE6 - make content area stretchable
+		if (o.ua.browser === 'IE' && o.ua.version < 7) {
+			this.content.attr('style', 'height:expression(document.getElementById("' + this.id + '_container' + '").clientHeight - ' + (type === 'list' ? 133 : 103) + ');');
+		}
 
-		$content.removeClass('plupload_view_list plupload_view_thumbs').addClass('plupload_view_' + type); 
+		this.container.removeClass('plupload_view_list plupload_view_thumbs').addClass('plupload_view_' + type); 
 		this.view_mode = type;
 		this._trigger('viewchanged', type);
 	},
@@ -908,7 +912,7 @@ $.widget("ui.plupload", {
 		filelist.sortable({
 			items: '.plupload_delete',
 			
-			cancel: 'object',
+			cancel: 'object, .plupload_clearer',
 
 			stop: function(e, ui) {
 				var i, length, idx, files = [];
