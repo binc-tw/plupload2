@@ -683,7 +683,7 @@ $.widget("ui.plupload", {
 
 		file_html = '<li class="plupload_file ui-state-default" id="%id%">' +
 						'<div class="plupload_file_thumb"> </div>' +
-						'<div class="plupload_file_name" title="%name%">%name% </div>' +						
+						'<div class="plupload_file_name" title="%name%"><span class="plupload_file_namespan">%name%</span></div>' +						
 						'<div class="plupload_file_action"><div class="ui-icon"> </div></div>' +
 						'<div class="plupload_file_size">%size% </div>' +
 						'<div class="plupload_file_status">' +
@@ -882,12 +882,16 @@ $.widget("ui.plupload", {
 	
 	_enableRenaming: function() {
 		var self = this;
-		
-		$('.plupload_delete .plupload_file_name span', this.filelist).live('click', function(e) {
-			var targetSpan = $(e.target), file, parts, name, ext = "";
 
+		this.filelist.dblclick(function(e) {
+			var nameSpan = $(e.target), nameInput, file, parts, name, width, ext = "";
+
+			if (!nameSpan.hasClass('plupload_file_namespan')) {
+				return;
+			}
+		
 			// Get file name and split out name and extension
-			file = self.uploader.getFile(targetSpan.parents('tr')[0].id);
+			file = self.uploader.getFile(nameSpan.closest('.plupload_file')[0].id);
 			name = file.name;
 			parts = /^(.+)(\.[^.]+)$/.exec(name);
 			if (parts) {
@@ -896,23 +900,23 @@ $.widget("ui.plupload", {
 			}
 
 			// Display input element
-			targetSpan.hide().after('<input class="plupload_file_rename" type="text" />');
-			targetSpan.next().val(name).focus().blur(function() {
-				targetSpan.show().next().remove();
+			nameInput = $('<input class="plupload_file_rename" type="text" />').width(nameSpan.width()).insertAfter(nameSpan.hide());
+			nameInput.val(name).blur(function() {
+				nameSpan.show().parent().scrollLeft(0).end().next().remove();
 			}).keydown(function(e) {
-				var targetInput = $(this);
+				var nameInput = $(this);
 
 				if ($.inArray(e.keyCode, [13, 27]) !== -1) {
 					e.preventDefault();
 
 					// Rename file and glue extension back on
 					if (e.keyCode === 13) {
-						file.name = targetInput.val() + ext;
-						targetSpan.text(file.name);
+						file.name = nameInput.val() + ext;
+						nameSpan.text(file.name);
 					}
-					targetInput.blur();
+					nameInput.blur();
 				}
-			});
+			})[0].focus();
 		});
 	},
 	

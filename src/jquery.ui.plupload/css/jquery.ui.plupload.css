@@ -153,6 +153,10 @@ html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't unders
 	float: left;
 }
 
+.plupload_view_list .plupload_file_rename {
+	margin-left: -2px;
+}
+
 .plupload_view_list .plupload_file_size, 
 .plupload_view_list .plupload_file_status,
 .plupload_filelist_footer .plupload_file_size, 
@@ -202,6 +206,11 @@ html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't unders
 	font-weight: bold;
 }
 
+.plupload_view_thumbs .plupload_file_rename {
+	padding: 1px 0;
+	width: 100% !important;
+}
+
 .plupload_view_thumbs div.plupload_file_size {
 	font-size: 0.8em;
 	font-weight: normal;
@@ -234,7 +243,11 @@ html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't unders
 }
 
 .plupload_file_rename {
-	width:95%;	
+	border: none;
+	font: normal 11px Verdana, sans-serif;
+	padding: 1px 2px;
+	line-height: 11px;
+	height: 11px;
 }
 
 .plupload_progress {width: 60px;}
