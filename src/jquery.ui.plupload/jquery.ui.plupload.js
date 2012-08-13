@@ -63,7 +63,6 @@ function renderUI(obj) {
 				'<table class="plupload_filelist plupload_filelist_footer ui-widget-header">' +
 				'<tr>' +
 					'<td class="plupload_cell plupload_file_name">' +
-
 						'<div class="plupload_buttons"><!-- Visible -->' +
 							'<a class="plupload_button plupload_add">' + _('Add Files') + '</a>&nbsp;' +
 							'<a class="plupload_button plupload_start">' + _('Start Upload') + '</a>&nbsp;' +
@@ -71,7 +70,6 @@ function renderUI(obj) {
 						'</div>' +
 
 						'<div class="plupload_started plupload_hidden"><!-- Hidden -->' +
-
 							'<div class="plupload_progress plupload_right">' +
 								'<div class="plupload_progress_container"></div>' +
 							'</div>' +
@@ -79,7 +77,6 @@ function renderUI(obj) {
 							'<div class="plupload_cell plupload_upload_status"></div>' +
 
 							'<div class="plupload_clearer">&nbsp;</div>' +
-
 						'</div>' +
 					'</td>' +
 					'<td class="plupload_file_status"><span class="plupload_total_status">0%</span></td>' +
@@ -162,7 +159,6 @@ $.widget("ui.plupload", {
 				unselectable: 'on'
 			});
 		
-		self._enableViewSwitcher();
 
 		// buttons
 		this.browse_button = $('.plupload_add', this.container).attr('id', id + '_browse');
@@ -245,8 +241,10 @@ $.widget("ui.plupload", {
 			if (uploader.features.dragdrop && self.options.dragdrop) {
 				self._enableDragAndDrop();	
 			}
+
+			self._enableViewSwitcher();
 			
-			self.container.attr('title', _('Using runtime: ') + (self.runtime = res.runtime));
+			self.container.attr('title', _('Using runtime: ') + up.runtime);
 
 			self.start_button.click(function(e) {
 				if (!$(this).button('option', 'disabled')) {
@@ -838,6 +836,13 @@ $.widget("ui.plupload", {
 		, button
 		;
 
+		if (!this.uploader.can('display_media')) { 
+			// avoid confusion and simply do not enable other views if runtime cannot show thumbs
+			switcher.hide();
+			self._viewChanged('list');
+			return;
+		}
+
 		$.each(self.options.views, function(type, on) {
 			if (!on) {
 				switcher.find('[for="plupload_view_' + type + '"], #plupload_view_' + type).remove();
@@ -847,13 +852,13 @@ $.widget("ui.plupload", {
 		// check if any visible left
 		buttons = switcher.find('.plupload_button:visible');
 
-		if ($.ui.button && buttons.length > 1) {
-			switcher.buttonset();
-		} else if (buttons.length === 1) {
+		if (buttons.length === 1) {
 			switcher.hide();
 			type = buttons.attr('for').replace(/^plupload_view_/, '');
 			self._viewChanged(type);
 			return;
+		} else if ($.ui.button && buttons.length > 1) {
+			switcher.buttonset();
 		} else {
 			switcher.show();
 			self._viewChanged(this.options.default_view);

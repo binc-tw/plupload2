@@ -533,8 +533,14 @@ plupload.Uploader = function(settings) {
 
 	// Add public methods
 	plupload.extend(this, {
-		
-		uid: 'uid_' + plupload.guid(),
+
+		/**
+		 * Unique id for the Uploader instance.
+		 *
+		 * @property id
+		 * @type String
+		 */
+		id : plupload.guid(),
 		
 		/**
 		 * Current state of the total uploading progress. This one can either be plupload.STARTED or plupload.STOPPED.
@@ -552,6 +558,14 @@ plupload.Uploader = function(settings) {
 		 * @type String
 		 */
 		runtime: '',
+
+		/**
+		 * Runtime id, will be set after uploader is initialized
+		 *
+		 * @property ruid
+		 * @type String
+		 */
+		ruid: null,
 
 		/**
 		 * Map of features that are available for the uploader runtime. Features will be filled
@@ -588,13 +602,16 @@ plupload.Uploader = function(settings) {
 		 */
 		total : total,
 
+
 		/**
-		 * Unique id for the Uploader instance.
+		 * Check if uploader has specified capability or not (is set to a proper function
+		 * after uploader is initialized)
 		 *
-		 * @property id
-		 * @type String
+		 * @method can
+		 * @param {Mixed} cap Capability to check
+		 * @return {Boolean} Whether uploader supports specified feature or not 
 		 */
-		id : plupload.guid(),
+		can: function(cap) { return false; },
 
 		/**
 		 * Initializes the Uploader instance and adds internal event listeners.
@@ -902,13 +919,18 @@ plupload.Uploader = function(settings) {
 				fileInput.onready = function() {
 					var info = o.Runtime.getInfo(this.ruid);
 
+					self.can = info.can;
+					self.ruid = info.uid;
+					self.runtime = info.type;
+
+					// for backward compatibility
 					self.features = {
 						chunks: info.can('stream_upload'),
 						multipart: info.can('send_multipart'),
 						multi_selection: info.can('select_multiple')
 					};
 					
-					self.trigger('Init', { runtime: info.name });
+					self.trigger('Init', { runtime: info.type });
 					self.trigger('PostInit');
 				};
 

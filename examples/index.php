@@ -10,8 +10,27 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
 
-<script type="text/javascript" src="../js/moxie.full.js"></script>
+<?php $libs = array(
+	'core/mOxie.js',
+	'core/Utils.js',
+	'core/Exceptions.js',
+	'core/I18N.js',
+	'core/EventTarget.js',
+	'core/Runtime.js',
+	'core/Transporter.js',
+	'core/FileAPI.js',
+	'core/Image.js',
+	'extra/ImageInfo.js',
+	'core/XMLHttpRequest.js',
+	'html4.js',
+	'html5.js',
+	'flash.js'
+);
 
+foreach ($libs as $lib) {
+	echo '<script type="text/javascript" src="../src/moxie/src/javascript/'.$lib.'"></script>' . "\n";	
+}
+?>
 
 <script type="text/javascript" src="../src/plupload.js"></script>
 <script type="text/javascript" src="../src/jquery.ui.plupload/js/jquery.cookie.js"></script>
@@ -35,7 +54,7 @@
 
 	<script>
 	$('#filepicker').plupload({
-		runtimes: "html5,flash",
+		runtimes: "html4",
 		url: 'upload.php',
 		chunk_size: '5mb',
 		multi_selection: true,
