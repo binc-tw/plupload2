@@ -427,7 +427,7 @@ var plupload = {
 
 
 plupload.Uploader = function(settings) {
-	var total, files = [], events = {}, startTime, disabled = false, xhr;
+	var total, fileInput, files = [], events = {}, startTime, disabled = false, xhr;
 
 	// Inital total state
 	total = new plupload.QueueProgress();
@@ -619,7 +619,7 @@ plupload.Uploader = function(settings) {
 		 * @method init
 		 */
 		init : function() {
-			var self = this, fileInput;
+			var self = this;
 
 			if (typeof(settings.preinit) == "function") {
 				settings.preinit(self);
@@ -913,7 +913,8 @@ plupload.Uploader = function(settings) {
 					required_caps: {
 						send_multipart: true
 					},
-					swf_url: settings.flash_swf_url
+					swf_url: settings.flash_swf_url,
+					xap_url: settings.silverlight_xap_url
 				});
 
 				fileInput.onready = function() {
@@ -986,6 +987,7 @@ plupload.Uploader = function(settings) {
 		 * @method refresh
 		 */
 		refresh : function() {
+			fileInput.trigger("Refresh");
 			this.trigger("Refresh");
 		},
 

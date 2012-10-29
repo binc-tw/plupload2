@@ -655,6 +655,8 @@ $.widget("ui.plupload", {
 			$('.ui-button-text', this.browse_button).text(_('%d files queued').replace('%d', up.total.queued));
 		}
 
+		up.refresh();
+
 		if (up.files.length === (up.total.uploaded + up.total.failed)) {
 			this.start_button.button('disable');
 		} else {
@@ -724,9 +726,10 @@ $.widget("ui.plupload", {
 							width: 100, 
 							height: 60, 
 							crop: true,
-							swf_url: o.resolveUrl(self.options.flash_swf_url)
+							swf_url: o.resolveUrl(self.options.flash_swf_url),
+							xap_url: o.resolveUrl(self.options.silverlight_xap_url)
 						});
-						cb();
+						setTimeout(cb, 1); // detach, otherwise ui might hang (in SilverLight for example)
 					};
 
 					img.onembedded = function() {

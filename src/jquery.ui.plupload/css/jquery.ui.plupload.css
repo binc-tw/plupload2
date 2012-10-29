@@ -220,7 +220,7 @@ html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't unders
 	position: absolute;
 	top: 67px;
 	left: 6px;
-	width: 102px;
+	width: 100px;
 	height: 3px;
 	overflow: hidden;
 	text-indent: -999px;
