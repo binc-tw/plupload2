@@ -516,8 +516,12 @@ plupload.Uploader = function(settings) {
 			file = files[i];
 
 			if (file.size !== undef) {
-				total.size += file.size;
-				total.loaded += file.loaded;
+				// We calculate totals based on original file size
+				total.size += file.origSize; 
+
+				// Since we cannot predict file size after resize, we do opposite and
+				// interpolate loaded amount to match magnitude of total
+				total.loaded += file.loaded * file.origSize / file.size;
 			} else {
 				total.size = undef;
 			}
@@ -541,20 +545,11 @@ plupload.Uploader = function(settings) {
 	}
 	
 	function addSelectedFiles(native_files) {
-		var file, i, files = [], fileNames = {};
+		var i, files = [];
 		
 		// Add the selected files to the file queue
 		for (i = 0; i < native_files.length; i++) {
-			var file = native_files[i];
-			
-			// Safari on Windows will add first file from dragged set multiple times
-			// @see: https://bugs.webkit.org/show_bug.cgi?id=37957
-			if (fileNames[file.name]) {
-				continue;
-			}
-			fileNames[file.name] = true;
-			
-			files.push(new plupload.File(file)); 
+			files.push(new plupload.File(native_files[i])); 
 		}
 
 		// Trigger FilesAdded event if we added any
@@ -1032,6 +1027,7 @@ plupload.Uploader = function(settings) {
 					// Resize if required
 					resizeImage.call(this, blob, up.settings.resize, function(resizedBlob) {
 						blob = resizedBlob;
+						file.size = resizedBlob.size;
 						uploadNextChunk();
 					});
 				} else {
@@ -1466,15 +1462,23 @@ plupload.File = (function() {
 			 * @property name
 			 * @type String
 			 */
-			name: file.fileName || file.name,
+			name: file.name || file.fileName,
 			
 			/**
-			 * File size in bytes.
+			 * File size in bytes (may change after client-side manupilation).
 			 *
 			 * @property size
 			 * @type Number
 			 */
-			size: file.fileSize || file.size,
+			size: file.size || file.fileSize,
+
+			/**
+			 * Original file size in bytes.
+			 *
+			 * @property origSize
+			 * @type Number
+			 */
+			origSize: file.size || file.fileSize,
 			
 			/**
 			 * Number of bytes uploaded of the files total size.

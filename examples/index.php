@@ -73,8 +73,8 @@ foreach ($libs as $lib) {
 				{title : "Zip files", extensions : "zip"}
 			],
 			resize: {
-				width: 100,
-				height: 100,
+				width: 400,
+				height: 400,
 				quality: 90
 			},
 			flash_swf_url: '../js/Moxie.swf',
