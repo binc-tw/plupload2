@@ -64,7 +64,7 @@ foreach ($libs as $lib) {
 	<script>
 	function init() {
 		$('#filepicker').plupload({
-			runtimes: "html5,flash,silverlight,html4",
+			runtimes: "flash,silverlight,html4",
 			url: 'upload.php',
 			//chunk_size: '5mb',
 			multi_selection: true,

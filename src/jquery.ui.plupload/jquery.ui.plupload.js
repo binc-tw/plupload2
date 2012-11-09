@@ -210,8 +210,8 @@ $.widget("ui.plupload", {
 		;
 
 		if (self.options.dragdrop) {
+			this.filelist.parent().attr('id', this.id + '_dropbox');
 			options.drop_element = this.id + '_dropbox';
-			this.filelist.parent().addClass('plupload_dropbox').attr('id', this.id + '_dropbox');
 		}
 
 		if (self.options.views.thumbs) {
@@ -250,6 +250,10 @@ $.widget("ui.plupload", {
 				
 			if (!self.options.unique_names && self.options.rename) {
 				self._enableRenaming();	
+			}
+
+			if (self.options.dragdrop && up.features.dragdrop) {
+				self.filelist.parent().addClass('plupload_dropbox');
 			}
 
 			self._enableViewSwitcher();
