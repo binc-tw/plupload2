@@ -97,9 +97,7 @@ $.widget("ui.plupload", {
 	imgs: {},
 	
 	contents_bak: '',
-	
-	runtime: null,
-	
+		
 	options: {
 		browse_button_hover: 'ui-state-hover',
 		browse_button_active: 'ui-state-active',
@@ -204,12 +202,28 @@ $.widget("ui.plupload", {
 		  self = this
 		, id = this.id
 		, buttonsContainer = $('.plupload_buttons', this.element).attr('id', id + '_buttons')
-		, uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend({ 
+		, uploader
+		, options = { 
 			container: id + '_buttons',
 			browse_button: id + '_browse'
-		}, this.options))
+		}
 		;
-		
+
+		if (self.options.dragdrop) {
+			options.drop_element = this.id + '_dropbox';
+			this.filelist.parent().addClass('plupload_dropbox').attr('id', this.id + '_dropbox');
+		}
+
+		if (self.options.views.thumbs) {
+			if (o.typeOf(self.options.required_features) === 'string') {
+				self.options.required_features += ",display_media";
+			} else {
+				self.options.required_features = "display_media";
+			}
+		}
+
+		uploader = this.uploader = uploaders[id] = new plupload.Uploader($.extend(this.options, options));
+
 		// do not show UI if no runtime can be initialized
 		uploader.bind('Error', function(up, err) {
 			if (err.code === plupload.INIT_ERROR) {
@@ -217,7 +231,7 @@ $.widget("ui.plupload", {
 			}
 		});
 		
-		uploader.bind('Init', function(up, res) {	
+		uploader.bind('PostInit', function(up, res) {	
 			// all buttons are optional, so they can be disabled and hidden
 			if (!self.options.buttons.browse) {
 				self.browse_button.button('disable').hide();
@@ -237,15 +251,9 @@ $.widget("ui.plupload", {
 			if (!self.options.unique_names && self.options.rename) {
 				self._enableRenaming();	
 			}
-			
-			if (uploader.features.dragdrop && self.options.dragdrop) {
-				self._enableDragAndDrop();	
-			}
 
 			self._enableViewSwitcher();
 			
-			self.container.attr('title', _('Using runtime: ') + up.runtime);
-
 			self.start_button.click(function(e) {
 				if (!$(this).button('option', 'disabled')) {
 					self.start();
@@ -365,6 +373,7 @@ $.widget("ui.plupload", {
 							details = plupload.translate('Runtime ran out of available memory.');
 							break;
 						
+						/* // This needs a review
 						case plupload.IMAGE_DIMENSIONS_ERROR :
 							details = plupload.translate('Resoultion out of boundaries! <b>%s</b> runtime supports images only up to %wx%hpx.').replace(/%([swh])/g, function($0, $1) {
 								switch ($1) {
@@ -373,7 +382,7 @@ $.widget("ui.plupload", {
 									case 'h': return up.features.maxHeight;
 								}
 							});
-							break;	
+							break;	*/
 													
 						case plupload.HTTP_ERROR:
 							details = _("Upload URL might be wrong or doesn't exist");
@@ -839,13 +848,6 @@ $.widget("ui.plupload", {
 		, button
 		;
 
-		if (!this.uploader.can('display_media')) { 
-			// avoid confusion and simply do not enable other views if runtime cannot show thumbs
-			switcher.hide();
-			self._viewChanged('list');
-			return;
-		}
-
 		$.each(self.options.views, function(type, on) {
 			if (!on) {
 				switcher.find('[for="plupload_view_' + type + '"], #plupload_view_' + type).remove();
@@ -853,7 +855,7 @@ $.widget("ui.plupload", {
 		});
 
 		// check if any visible left
-		buttons = switcher.find('.plupload_button:visible');
+		buttons = switcher.find('.plupload_button');
 
 		if (buttons.length === 1) {
 			switcher.hide();
@@ -861,6 +863,7 @@ $.widget("ui.plupload", {
 			self._viewChanged(type);
 			return;
 		} else if ($.ui.button && buttons.length > 1) {
+			switcher.show();
 			switcher.buttonset();
 		} else {
 			switcher.show();
@@ -929,12 +932,6 @@ $.widget("ui.plupload", {
 				}
 			})[0].focus();
 		});
-	},
-	
-	
-	_enableDragAndDrop: function() {
-		this.filelist.parent().addClass('plupload_dropbox').attr('id', this.id + '_dropbox');
-		this.uploader.settings.drop_element = this.options.drop_element = this.id + '_dropbox';
 	},
 	
 	

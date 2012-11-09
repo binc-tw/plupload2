@@ -63,7 +63,7 @@ foreach ($libs as $lib) {
 
 	<script>
 	$('#filepicker').plupload({
-		runtimes: "silverlight",
+		runtimes: "html5,flash,silverlight,html4",
 		url: 'upload.php',
 		//chunk_size: '5mb',
 		multi_selection: true,
@@ -82,10 +82,7 @@ foreach ($libs as $lib) {
 		remember_view: true, // requires jquery cookie plugin
 		sortable: true,
 		rename: true,
-
-		required_features: {
-				
-		}
+		dragdrop: true
 	});
 	</script>
 

@@ -427,7 +427,9 @@ var plupload = {
 
 
 plupload.Uploader = function(settings) {
-	var total, fileInput, files = [], events = {}, startTime, disabled = false, xhr;
+	var files = [], events = {}, required_features = [], required_caps = {}, feature2cap = {}, 
+		startTime, total, disabled = false, 
+		fileInput, fileDrop, xhr;
 
 	// Inital total state
 	total = new plupload.QueueProgress();
@@ -441,6 +443,36 @@ plupload.Uploader = function(settings) {
 		filters : [],
 		url_stream: false // forces Flash runtime into the URLStream mode
 	}, settings);
+
+
+	// Required features
+	feature2cap = {
+		chunks: 'slice_blob',
+		jpgresize: 'access_image_binary',
+		pngresize: 'access_image_binary',
+		multipart: 'send_multipart',
+		progress: 'report_upload_progress',
+		multi_selection: 'select_multiple',
+		canSendBinary: 'send_binary'
+
+		//dragdrop: 'drag_and_drop',
+		//triggerDialog: 'summon_file_dialog'
+	};
+
+	if (typeof(settings.required_features) === 'string') {
+		settings.required_features.split(/\s*,\s*/);
+	}
+
+	if (required_features.length) {
+		plupload.each(required_features, function(feature) {
+			if (feature2cap[feature]) {
+				required_caps[feature2cap[feature]] = true;
+			} else {
+				required_caps[feature] = true;
+			}
+		});
+	}
+
 
 	// Private methods
 	function uploadNext() {
@@ -531,6 +563,143 @@ plupload.Uploader = function(settings) {
 		}
 	}
 
+
+	function initControls() {
+		var self = this, initialized = 0;
+
+		o.inSeries([
+			function(cb) {
+				// Initialize file dialog trigger
+				if (settings.browse_button) {
+					try {
+						fileInput = new o.FileInput({
+							accept: settings.filters,
+							runtime_order: settings.runtimes,
+							name: settings.file_data_name,
+							multiple: settings.multi_selection,
+							container: settings.container,
+							browse_button: settings.browse_button,
+							required_caps: required_caps,
+							swf_url: settings.flash_swf_url,
+							xap_url: settings.silverlight_xap_url
+						});
+
+						fileInput.onready = function() {
+							var info = o.Runtime.getInfo(this.ruid);
+
+							// for backward compatibility
+							o.extend(self.features, {
+								chunks: info.can('stream_upload'),
+								multipart: info.can('send_multipart'),
+								multi_selection: info.can('select_multiple')
+							});
+
+							initialized++;
+							cb();
+						};
+
+						fileInput.onerror = function() {
+							cb();
+						};
+
+						fileInput.onchange = function() {
+							addSelectedFiles.call(self, this.files);
+						};
+						
+						
+						fileInput.bind('mouseenter mouseleave mousedown mouseup', function(e) {
+							var bButton = o(settings.browse_button);
+							if (bButton) {
+								if (settings.browse_button_hover) {
+									if ('mouseenter' === e.type) {
+										o.addClass(bButton, settings.browse_button_hover);
+									} else if ('mouseleave' === e.type) {
+										o.removeClass(bButton, settings.browse_button_hover);
+									}
+								}
+								
+								if (settings.browse_button_active) {
+									if ('mousedown' === e.type) {
+										o.addClass(bButton, settings.browse_button_active);
+									} else if ('mouseup' === e.type) {
+										o.removeClass(bButton, settings.browse_button_active);
+									}
+								}
+								bButton = null;
+							}
+						});
+
+						fileInput.init();
+					} catch (ex) {
+						cb();
+					}
+				} else {
+					cb();
+				}
+			},
+
+			function(cb) {
+				// Initialize drag/drop interface if requested
+				if (settings.drop_element) {
+					try {
+						fileDrop = new o.FileDrop({
+							drop_zone: settings.drop_element,
+							accept: settings.filters,
+							runtime_order: settings.runtimes,
+							required_caps: required_caps,
+							swf_url: settings.flash_swf_url,
+							xap_url: settings.silverlight_xap_url
+						});
+
+						fileDrop.onerror = function() {
+							cb();
+						};
+
+						fileDrop.onready = function() {
+							var info = o.Runtime.getInfo(this.ruid);
+
+							self.features.dragdrop = info.can('drag_and_drop');
+
+							initialized++;
+							cb();
+						};
+
+						fileDrop.ondrop = function() {
+							addSelectedFiles.call(self, this.files);
+						};
+
+						fileDrop.init();
+					} catch(ex) {
+						cb();
+					}
+				} else {
+					cb();
+				}
+			}
+		], 
+		function(error) {
+
+			if (initialized) {
+				self.trigger('Init');
+				self.trigger('PostInit');
+
+				if (typeof(settings.init) == "function") {
+					settings.init(self);
+				} else {
+					plupload.each(settings.init, function(func, name) {
+						self.bind(name, func);
+					});
+				}
+			} else {
+				self.trigger('Error', {
+					code : plupload.INIT_ERROR,
+					message : plupload.translate('Init error.')
+				});
+			}
+		});
+	}
+
+
 	// Add public methods
 	plupload.extend(this, {
 
@@ -551,21 +720,6 @@ plupload.Uploader = function(settings) {
 		 */
 		state : plupload.STOPPED,
 		
-		/**
-		 * Current runtime name.
-		 *
-		 * @property runtime
-		 * @type String
-		 */
-		runtime: '',
-
-		/**
-		 * Runtime id, will be set after uploader is initialized
-		 *
-		 * @property ruid
-		 * @type String
-		 */
-		ruid: null,
 
 		/**
 		 * Map of features that are available for the uploader runtime. Features will be filled
@@ -575,7 +729,7 @@ plupload.Uploader = function(settings) {
 		 * @property features
 		 * @type Object
 		 */
-		features : null,
+		features : {},
 
 		/**
 		 * Current upload queue, an array of File instances.
@@ -604,22 +758,20 @@ plupload.Uploader = function(settings) {
 
 
 		/**
-		 * Check if uploader has specified capability or not (is set to a proper function
-		 * after uploader is initialized)
-		 *
-		 * @method can
-		 * @param {Mixed} cap Capability to check
-		 * @return {Boolean} Whether uploader supports specified feature or not 
-		 */
-		can: function(cap) { return false; },
-
-		/**
 		 * Initializes the Uploader instance and adds internal event listeners.
 		 *
 		 * @method init
 		 */
 		init : function() {
 			var self = this;
+
+			// Convert settings
+			settings.chunk_size = plupload.parseSize(settings.chunk_size);
+			settings.max_file_size = plupload.parseSize(settings.max_file_size);
+
+			// Check if drop zone requested
+			settings.drop_element = o(settings.drop_element);
+
 
 			if (typeof(settings.preinit) == "function") {
 				settings.preinit(self);
@@ -628,10 +780,6 @@ plupload.Uploader = function(settings) {
 					self.bind(name, func);
 				});
 			}
-
-			// Convert settings
-			settings.chunk_size = plupload.parseSize(settings.chunk_size);
-			settings.max_file_size = plupload.parseSize(settings.max_file_size);
 
 			// Add files to queue
 			self.bind('FilesAdded', function(up, selected_files) {
@@ -901,83 +1049,7 @@ plupload.Uploader = function(settings) {
 				}, 1);
 			});
 			
-			// Initialize
-			try {
-				fileInput = new o.FileInput({
-					accept: settings.filters,
-					runtime_order: settings.runtimes,
-					name: settings.file_data_name,
-					multiple: settings.multi_selection,
-					container: settings.container,
-					browse_button: settings.browse_button,
-					required_caps: {
-						send_multipart: true
-					},
-					swf_url: settings.flash_swf_url,
-					xap_url: settings.silverlight_xap_url
-				});
-
-				fileInput.onready = function() {
-					var info = o.Runtime.getInfo(this.ruid);
-
-					self.can = info.can;
-					self.ruid = info.uid;
-					self.runtime = info.type;
-
-					// for backward compatibility
-					self.features = {
-						chunks: info.can('stream_upload'),
-						multipart: info.can('send_multipart'),
-						multi_selection: info.can('select_multiple')
-					};
-					
-					self.trigger('Init', { runtime: info.type });
-					self.trigger('PostInit');
-				};
-
-				fileInput.onchange = function() {
-					addSelectedFiles.call(self, this.files);
-				};
-				
-				
-				fileInput.bind('mouseenter mouseleave mousedown mouseup', function(e) {
-					var bButton = o(settings.browse_button);
-					if (bButton) {
-						if (settings.browse_button_hover) {
-							if ('mouseenter' === e.type) {
-								o.addClass(bButton, settings.browse_button_hover);
-							} else if ('mouseleave' === e.type) {
-								o.removeClass(bButton, settings.browse_button_hover);
-							}
-						}
-						
-						if (settings.browse_button_active) {
-							if ('mousedown' === e.type) {
-								o.addClass(bButton, settings.browse_button_active);
-							} else if ('mouseup' === e.type) {
-								o.removeClass(bButton, settings.browse_button_active);
-							}
-						}
-						bButton = null;
-					}
-				});
-
-				fileInput.init();
-			} catch (ex) {
-				self.trigger('Error', {
-					code : plupload.INIT_ERROR,
-					message : plupload.translate('Init error.')
-				});
-				return;
-			}
-
-			if (typeof(settings.init) == "function") {
-				settings.init(self);
-			} else {
-				plupload.each(settings.init, function(func, name) {
-					self.bind(name, func);
-				});
-			}
+			initControls.call(this);
 		},
 
 		/**

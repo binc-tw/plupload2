@@ -59,6 +59,7 @@
 	right: 8px;
 	bottom: 8px;
 	margin: 0;
+	display: none;
 }
 
 .plupload_view_switch .ui-button {
@@ -279,7 +280,7 @@ html > body .plupload_view_list .plupload_file { /* make sure IE6 doesn't unders
 	text-align: center;
 	vertical-align: middle;
 	border: 0;
-	line-height: 200px;
+	line-height: 160px;
 	display: none;
 }
 
