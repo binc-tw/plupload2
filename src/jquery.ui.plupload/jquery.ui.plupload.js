@@ -499,6 +499,11 @@ $.widget("ui.plupload", {
 	
 
 	destroy: function() {
+		this._removeFiles([].slice.call(this.uploader.files));
+		
+		// destroy uploader instance
+		this.uploader.destroy();
+
 		// unbind all button events
 		$('.plupload_button', this.element).unbind();
 		
@@ -517,11 +522,6 @@ $.widget("ui.plupload", {
 		if ($.ui.sortable && this.options.sortable) {
 			$('tbody', this.filelist).sortable('destroy');
 		}
-
-		this._removeFiles(this.uploader.files);
-		
-		// destroy uploader instance
-		this.uploader.destroy();
 		
 		// restore the elements initial state
 		this.element
