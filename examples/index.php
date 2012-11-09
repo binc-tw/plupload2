@@ -68,10 +68,15 @@ foreach ($libs as $lib) {
 			url: 'upload.php',
 			//chunk_size: '5mb',
 			multi_selection: true,
-			/*filters : [
+			filters : [
 				{title : "Image files", extensions : "jpg,jpeg,gif,png"},
 				{title : "Zip files", extensions : "zip"}
-			],*/
+			],
+			resize: {
+				width: 100,
+				height: 100,
+				quality: 90
+			},
 			flash_swf_url: '../js/Moxie.swf',
 			silverlight_xap_url: '../js/Moxie.xap',
 
@@ -89,6 +94,8 @@ foreach ($libs as $lib) {
 
 	init();
 	</script>
+
+	<br />
 
 	<button onclick='$("#filepicker").plupload("destroy");'>Destroy</button>
 	<button onclick='init()'>Init</button>

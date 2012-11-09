@@ -700,6 +700,29 @@ plupload.Uploader = function(settings) {
 	}
 
 
+	function resizeImage(blob, params, cb) {
+		var img = new o.Image();
+
+		try {
+			img.onload = function() {
+				img.resize(params.width, params.height);
+			};
+
+			img.onresize = function() {
+				cb(img.getAsBlob(blob.type, params.quality));
+			};
+
+			img.onerror = function() {
+				cb(blob);
+			};
+
+			img.load(blob);
+		} catch(ex) {
+			cb(blob); 
+		}
+	}
+
+
 	// Add public methods
 	plupload.extend(this, {
 
@@ -974,7 +997,12 @@ plupload.Uploader = function(settings) {
 
 						// Add file and send it
 						formData.append(up.settings.file_data_name, chunkBlob);								
-						xhr.send(formData);
+						xhr.send(formData, {
+							runtime_order: up.settings.runtimes,
+							required_caps: required_caps,
+							swf_url: up.settings.flash_swf_url,
+							xap_url: up.settings.silverlight_xap_url 
+						});
 					} else {
 						// if no multipart, send as binary stream
 						url = plupload.buildUrl(up.settings.url, plupload.extend(args, up.settings.multipart_params));
@@ -988,14 +1016,27 @@ plupload.Uploader = function(settings) {
 							xhr.setRequestHeader(name, value);
 						});
 
-						xhr.send(chunkBlob); 
+						xhr.send(chunkBlob, {
+							runtime_order: up.settings.runtimes,
+							required_caps: required_caps,
+							swf_url: up.settings.flash_swf_url,
+							xap_url: up.settings.silverlight_xap_url 
+						}); 
 					}				
 				}
 
 				blob = file.getSource();
-								
+
 				// Start uploading chunks
-				uploadNextChunk();
+				if (!o.isEmptyObj(up.settings.resize) && !!~o.inArray(blob.type, ['image/jpeg', 'image/png'])) {
+					// Resize if required
+					resizeImage.call(this, blob, up.settings.resize, function(resizedBlob) {
+						blob = resizedBlob;
+						uploadNextChunk();
+					});
+				} else {
+					uploadNextChunk();
+				}				
 			});
 
 			self.bind('UploadProgress', function(up, file) {
