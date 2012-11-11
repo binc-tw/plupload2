@@ -64,7 +64,7 @@ foreach ($libs as $lib) {
 	<script>
 	function init() {
 		$('#filepicker').plupload({
-			runtimes: "flash,silverlight,html4",
+			runtimes: "html4",
 			url: 'upload.php',
 			//chunk_size: '5mb',
 			multi_selection: true,
@@ -73,8 +73,8 @@ foreach ($libs as $lib) {
 				{title : "Zip files", extensions : "zip"}
 			],
 			resize: {
-				width: 400,
-				height: 400,
+				width: 800,
+				height: 800,
 				quality: 90
 			},
 			flash_swf_url: '../js/Moxie.swf',
@@ -82,7 +82,7 @@ foreach ($libs as $lib) {
 
 			views: {
 				list: true,
-				thumbs: true
+				thumbs: false
 			},
 			default_view: 'thumbs',
 			remember_view: true, // requires jquery cookie plugin

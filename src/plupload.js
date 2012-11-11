@@ -448,8 +448,9 @@ plupload.Uploader = function(settings) {
 	// Required features
 	feature2cap = {
 		chunks: 'slice_blob',
-		jpgresize: 'access_image_binary',
-		pngresize: 'access_image_binary',
+		resize: 'send_binary_string',
+		jpgresize: 'send_binary_string',
+		pngresize: 'send_binary_string',
 		multipart: 'send_multipart',
 		progress: 'report_upload_progress',
 		multi_selection: 'select_multiple',
@@ -460,7 +461,7 @@ plupload.Uploader = function(settings) {
 	};
 
 	if (typeof(settings.required_features) === 'string') {
-		settings.required_features.split(/\s*,\s*/);
+		required_features = settings.required_features.split(/\s*,\s*/);
 	}
 
 	if (required_features.length) {
@@ -692,6 +693,17 @@ plupload.Uploader = function(settings) {
 				});
 			}
 		});
+	}
+
+
+	function runtimeCan(file, cap) {
+		if (file.ruid) {
+			var info = o.Runtime.getInfo(file.ruid);
+			if (info) {
+				return info.can(cap);
+			}
+		}
+		return false;
 	}
 
 
@@ -1023,7 +1035,7 @@ plupload.Uploader = function(settings) {
 				blob = file.getSource();
 
 				// Start uploading chunks
-				if (!o.isEmptyObj(up.settings.resize) && !!~o.inArray(blob.type, ['image/jpeg', 'image/png'])) {
+				if (!o.isEmptyObj(up.settings.resize) && runtimeCan(blob, 'send_binary_string') && !!~o.inArray(blob.type, ['image/jpeg', 'image/png'])) {
 					// Resize if required
 					resizeImage.call(this, blob, up.settings.resize, function(resizedBlob) {
 						blob = resizedBlob;
