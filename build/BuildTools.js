@@ -29,7 +29,8 @@ exports.uglify = function (sourceFiles, outputFile, options) {
 	options = extend({
 		mangle       : true,
 		toplevel     : false,
-		no_functions : false
+		no_functions : false,
+		no_copyright : false
 	}, options);
 
 	// Combine JS files
@@ -48,9 +49,9 @@ exports.uglify = function (sourceFiles, outputFile, options) {
 	var ast = jsp.parse(code);
 
 	// Write combined, but not minified version (just strip off the comments)
-	fs.writeFileSync(outputFile.replace(/\.min\./, '.full.'), pro.gen_code(ast, {
+	/*fs.writeFileSync(outputFile.replace(/\.min\./, '.full.'), pro.gen_code(ast, {
 		beautify: true
-	}));
+	}));*/
 
 	ast = pro.ast_mangle(ast, options);
 	ast = pro.ast_squeeze(ast);
@@ -227,16 +228,20 @@ exports.zip = function (sourceFiles, zipFile, options) {
 	var zip = require("node-native-zip");
 	var archive = new zip();
 
+	var files = [];
+
 	function process(filePath, zipFilePath) {
 		var stat = fs.statSync(filePath);
 
 		zipFilePath = zipFilePath || filePath;
 
 		if (stat.isFile()) {
-			archive.add(zipFilePath, fs.readFileSync(filePath));
+			files.push({ name: zipFilePath, path: filePath });
 		} else if (stat.isDirectory()) {
 			fs.readdirSync(filePath).forEach(function(fileName) {
-				process(path.join(filePath, fileName), path.join(zipFilePath, fileName));
+				if (/^[^\.]/.test(fileName)) {
+					process(path.join(filePath, fileName), path.join(zipFilePath, fileName));
+				}
 			});
 		}
 	}
@@ -252,5 +257,127 @@ exports.zip = function (sourceFiles, zipFile, options) {
 		}
 	});
 
-	fs.writeFileSync(zipFile, archive.toBuffer());
+	archive.addFiles(files, function() {
+		archive.toBuffer(function(buffer) {
+			fs.writeFileSync(zipFile, buffer);
+		});
+	});
+}
+
+exports.copySync = function(from, to) {
+	var stat;
+
+	function copyFile(srcFile, destFile) {
+		var BUF_LENGTH, buff, bytesRead, fdr, fdw, pos;
+		
+		BUF_LENGTH = 64 * 1024;
+		buff = new Buffer(BUF_LENGTH);
+		fdr = fs.openSync(srcFile, 'r');
+		fdw = fs.openSync(destFile, 'w');
+		bytesRead = 1;
+		pos = 0;
+		
+		while (bytesRead > 0) {
+			bytesRead = fs.readSync(fdr, buff, 0, BUF_LENGTH, pos);
+			fs.writeSync(fdw, buff, 0, bytesRead);
+			pos += bytesRead;
+		}
+		fs.closeSync(fdr);
+		return fs.closeSync(fdw);
+	}
+
+	try {
+		stat = fs.statSync(from);
+	} catch (ex) {
+		console.info("Error: " + from + " not found.");
+		process.exit(1);
+	}
+
+	if (stat.isFile()) {
+		copyFile(from, to);
+	} else if (stat.isDirectory()) {
+		/*fs.readdirSync(from).forEach(function(fileName) {
+			copySync(from, to)
+		});*/
+		console.info("Error: " + from + " is directory");
+	} 
+}
+
+// recursively delete specified folder
+exports.rmDir = function(dirPath) {
+	try { var files = fs.readdirSync(dirPath); }
+	catch(e) { return; }
+	if (files.length > 0)
+		for (var i = 0; i < files.length; i++) {
+			var filePath = dirPath + '/' + files[i];
+			if (fs.statSync(filePath).isFile())
+				fs.unlinkSync(filePath);
+			else
+				this.rmDir(filePath);
+		}
+	fs.rmdirSync(dirPath);
+}
+
+// extract version details from chengelog.txt
+exports.getReleaseInfo = function (srcPath) {
+	if (!path.existsSync(srcPath)) {
+		console.info(srcPath + " cannot be found.");
+		process.exit(1);
+	} 
+	
+	var src = fs.readFileSync(srcPath).toString();
+
+	var info = src.match(/Version ([0-9xabrc\.]+)[^\(]+\(([^\)]+)\)/);
+	if (!info) {
+		console.info("Error: Version cannot be extracted.");
+		process.exit(1);
+	}
+
+	// assume that very first file in array will have the copyright
+	var copyright = (function() {
+		var matches = fs.readFileSync(srcPath).toString().match(/^\/\*[\s\S]+?\*\//);
+		return matches ? matches[0] : null;
+	}());
+
+	return {
+		version: info[1],
+		releaseDate: info[2],
+		fileVersion: info[1].replace(/\./g, '_'),
+		headNote: copyright
+	}
+}
+
+// inject version details and copyright header if available to all js files in specified directory
+exports.addReleaseDetailsTo = function (destPath, info) {
+	var self = this;
+
+	function processFile(filePath) {
+
+		if (info.headNote) {
+			contents = info.headNote + "\n" + fs.readFileSync(filePath);
+		}
+
+		contents = contents.replace(/@@([^@]+)@@/g, function($0, $1) {
+			switch ($1) {
+				case "version": return info.version;
+				case "releasedate": return info.releaseDate;
+			}
+		});
+
+		fs.writeFileSync(filePath, contents);
+	}
+
+	function isTextFile(filePath) {
+		return /\.(js|txt)$/.filePath;
+	}
+
+	var stat = fs.statSync(destPath);
+
+	if (stat.isFile()) {
+		processFile(destPath);
+	} else if (stat.isDirectory()) {
+		fs.readdirSync(destPath).forEach(function(fileName) {
+			self.addReleaseDetailsTo(path.join(destPath, fileName), info);
+		});
+	}
 }
