@@ -29,8 +29,7 @@ exports.uglify = function (sourceFiles, outputFile, options) {
 	options = extend({
 		mangle       : true,
 		toplevel     : false,
-		no_functions : false,
-		no_copyright : false
+		no_functions : false
 	}, options);
 
 	// Combine JS files
@@ -57,7 +56,7 @@ exports.uglify = function (sourceFiles, outputFile, options) {
 	ast = pro.ast_squeeze(ast);
 	code = pro.gen_code(ast);
 
-	fs.writeFileSync(outputFile, code);
+	fs.writeFileSync(outputFile, ";" + code + ";");
 };
 
 exports.mkswf = function(params, cb) {
