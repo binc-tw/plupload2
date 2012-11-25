@@ -604,24 +604,26 @@ plupload.Uploader = function(settings) {
 						
 						
 						fileInput.bind('mouseenter mouseleave mousedown mouseup', function(e) {
-							var bButton = o(settings.browse_button);
-							if (bButton) {
-								if (settings.browse_button_hover) {
-									if ('mouseenter' === e.type) {
-										o.addClass(bButton, settings.browse_button_hover);
-									} else if ('mouseleave' === e.type) {
-										o.removeClass(bButton, settings.browse_button_hover);
+							if (!disabled) {
+								var bButton = o(settings.browse_button);
+								if (bButton) {
+									if (settings.browse_button_hover) {
+										if ('mouseenter' === e.type) {
+											o.addClass(bButton, settings.browse_button_hover);
+										} else if ('mouseleave' === e.type) {
+											o.removeClass(bButton, settings.browse_button_hover);
+										}
 									}
-								}
-								
-								if (settings.browse_button_active) {
-									if ('mousedown' === e.type) {
-										o.addClass(bButton, settings.browse_button_active);
-									} else if ('mouseup' === e.type) {
-										o.removeClass(bButton, settings.browse_button_active);
+									
+									if (settings.browse_button_active) {
+										if ('mousedown' === e.type) {
+											o.addClass(bButton, settings.browse_button_active);
+										} else if ('mouseup' === e.type) {
+											o.removeClass(bButton, settings.browse_button_active);
+										}
 									}
+									bButton = null;
 								}
-								bButton = null;
 							}
 						});
 
@@ -873,6 +875,12 @@ plupload.Uploader = function(settings) {
 					}, 1);
 				} else {
 					return false; // Stop the FilesAdded event from immediate propagation
+				}
+			});
+			
+			self.bind("CancelUpload", function() {
+				if (xhr) {
+					xhr.abort();	
 				}
 			});
 
@@ -1147,6 +1155,11 @@ plupload.Uploader = function(settings) {
 		 */
 		disableBrowse : function() {
 			disabled = arguments[0] !== undef ? arguments[0] : true;
+
+			if (fileInput) {
+				fileInput.disable(disabled);
+			}
+
 			this.trigger("DisableBrowse", disabled);
 		},
 

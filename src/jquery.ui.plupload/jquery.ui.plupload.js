@@ -269,6 +269,8 @@ $.widget("ui.plupload", {
 				self.stop();
 				e.preventDefault();
 			});
+
+			self._trigger('ready', null, { up: up });
 		});
 		
 		
@@ -442,6 +444,16 @@ $.widget("ui.plupload", {
 	stop: function() {
 		this.uploader.stop();
 		this._trigger('stop', null);
+	},
+
+	enable: function() {
+		self.browse_button.button('enable')
+		this.uploader.disableBrowse(false);
+	},
+
+	disable: function() {
+		this.browse_button.button('disable')
+		this.uploader.disableBrowse(true);
 	},
 
 	
