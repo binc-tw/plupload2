@@ -678,7 +678,6 @@ plupload.Uploader = function(settings) {
 		function(error) {
 
 			if (initialized) {
-				self.trigger('Init');
 				self.trigger('PostInit');
 
 				if (typeof(settings.init) == "function") {
@@ -1105,6 +1104,12 @@ plupload.Uploader = function(settings) {
 					uploadNext.call(self);
 				}, 1);
 			});
+
+			// some dependent scripts hook onto Init to alter configuration options, raw UI, etc (like Queue Widget),
+			// therefore we got to fire this one, before we dive into the actual initializaion
+			self.trigger('Init', { 
+				runtime: "Generic" // we need to pass something for backward compatibility
+			}); 
 			
 			initControls.call(this);
 		},
