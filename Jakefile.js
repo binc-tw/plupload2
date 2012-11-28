@@ -38,7 +38,7 @@ task("moxie", [], function (params) {
 
 
 desc("Minify JS files");
-task("minifyjs", ["moxie"], function (params) {
+task("minifyjs", [], function (params) {
 	var targetDir = "./js", moxieDir = "src/moxie";
 	
 	// Clear previous versions
@@ -59,6 +59,15 @@ task("minifyjs", ["moxie"], function (params) {
 		'jquery.ui.plupload.js'
 	], targetDir + "/jquery.ui.plupload/jquery.ui.plupload.min.js", {
 		sourceBase: targetDir + "/jquery.ui.plupload/"
+	});
+
+	// Copy Queue Plupload
+	wrench.copyDirSyncRecursive("./src/jquery.plupload.queue", targetDir + "/jquery.plupload.queue", {});
+
+	uglify([
+		'jquery.plupload.queue.js'
+	], targetDir + "/jquery.plupload.queue/jquery.plupload.queue.min.js", {
+		sourceBase: targetDir + "/jquery.plupload.queue/"
 	});
 
 	// Minify Plupload and combine with mOxie
